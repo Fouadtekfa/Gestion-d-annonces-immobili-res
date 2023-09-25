@@ -1,0 +1,8 @@
+services:
+    mongo:
+        image: mongo:latest
+        container_name: mongo
+        ports:
+        - 8888:8888
+        volumes:
+        - ./data:/data/db

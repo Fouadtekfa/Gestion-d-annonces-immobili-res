@@ -3,6 +3,6 @@ services:
         image: mongo:latest
         container_name: mongo
         ports:
-        - 8888:8888
+          - 27017:27017
         volumes:
-        - ./data:/data/db
+          - ./data:/data/db

@@ -1,5 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
+var mongoose = require ('mongoose');
+require("dotenv").config();
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -8,6 +10,27 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+// connexion bdd 
+(async () => {
+  try {
+    // Connexion à la base de données MongoDB
+    await mongoose.connect(process.env.MDB, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    // Si la connexion réussit
+    console.log('Connexion à MongoDB réussie');
+  } catch (error) {
+    // En cas d'échec de connexion
+    console.error('Erreur de connexion à MongoDB :', error.message);
+    //lever une exception
+    throw new Error('Impossible de se connecter à la base de données MongoDB');
+  }
+})();
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -42,5 +65,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+
+
 
 module.exports = app;

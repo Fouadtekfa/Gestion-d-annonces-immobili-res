@@ -9,6 +9,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var announcesRouter = require('./routes/announces');
+var createUserRouter=require('./routes/createuser');
 
 var app = express();
 
@@ -54,6 +55,7 @@ app.use('/js', express.static(path.join(__dirname, 'node_modules/boxicons/dist')
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/announces', announcesRouter);
+app.use('/',createUserRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

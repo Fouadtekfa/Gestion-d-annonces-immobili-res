@@ -1,0 +1,44 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    title Création d'Utilisateur
+    link(rel='stylesheet' href='../css/bootstrap.min.css')
+    link(rel='stylesheet' href='../stylesheets/style.css')
+    link(rel='stylesheet' href='../stylesheets/forms.css')
+    link(rel='stylesheet' href='../css/boxicons.min.css')
+  body
+    include includes/navbar
+    .container-gral
+      .container-form
+        form.create-user-form
+          h2.title-form S’inscrire
+          .input-group.mb-3
+          span#inputGroup-sizing-default.input-group-text
+            label(for='nom') Nom :
+            i.bx.bx-user
+            input.form-control(type='text', name='nom', id='nom',placeholder='Nom', aria-label='Sizing example input' aria-describedby='inputGroup-sizing-default' required)
+          .input-group.mb-3
+          span#inputGroup-sizing-default.input-group-text 
+            label(for='prenom') Prénom :    
+            i.bx.bx-user
+            input.form-control(type='text', name='prenom', id='prenom',placeholder='Prénom' aria-label='Prénom' aria-describedby='inputGroup-sizing-default' required)
+          .input-group.mb-3
+          span#inputGroup-sizing-default.input-group-text
+            label(for='email') E-mail :
+             i.bx.bx-mail-send
+            input.form-control(type='email', name='email', id='email',placeholder='name@example.com', aria-label='E-mail' aria-describedby='inputGroup-sizing-default' required)
+            
+          .input-group.mb-3
+          span#inputGroup-sizing-default.input-group-text
+            label(for='password') Mot de passe :
+              i.bx.bx-lock
+            input.form-control(type='password', name='password', id='password', aria-label='Mot de passe' aria-describedby='inputGroup-sizing-default' required)
+          .footer-form
+            button.btn.btn-primary(type='submit') S'inscrire
+            a.btn.btn-secondary(href='/users') Annuler
+    script(src='../js/jquery.slim.min.js')
+    script(src='../js/bootstrap.bundle.js')
+    script(src='../js/boxicons.js')
+    script(src='../javascripts/announceCreation.js')

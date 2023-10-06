@@ -19,15 +19,18 @@ router.get('/createuser', function(req, res, next) {
 router.post('/createuser', async (req, res) => {
   try {
       // Récupérer les données du formulaire
-      const {name, first_name, email, password} = req.body;
+      const {name, first_name, email, password,ConfirmPassword} = req.body;
       
       console.log(name);
-      console.log(name, first_name, email, password);
+      console.log(name, first_name, email, password,ConfirmPassword);
       // Vérifier si l'utilisateur existe déjà
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-          return res.status(400).json({ message: 'L\'utilisateur existe déjà.' });
+          return res.status(400).json({ message: 'une adresse mail identique avait déjà été enregistrée.' });
       }
+      if (password !== ConfirmPassword) {
+        return res.status(400).json({ message: 'les mots de passe ne sont pas identiques' });
+    }
 
       // Hacher le mot de passe algorithme de hachage sera exécuté 10 fois 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -42,32 +45,9 @@ router.post('/createuser', async (req, res) => {
 
   } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Une erreur est survenue lors de l\'inscription.' });
+      res.status(500).json({ message: 'une erreur s\'est produite lors de l\'inscription'});
   }
 });
-
-
-//   name: {
-//     type: String,
-//     required: true
-//   },
-//   first_name: {
-//       type: String,
-//       required: true
-//     },
-//   email: {
-//     type: String,
-//     required: true
-//   },
-//   password: {
-//     type: String,
-//     required: true
-//   },
-//   isAdmin: {
-//     type: Boolean,
-//     default: false
-//   }
-// });
 
 
 module.exports = router;

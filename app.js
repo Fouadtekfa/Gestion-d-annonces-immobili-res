@@ -95,7 +95,7 @@ app.use(function(err, req, res, next) {
 
 
 function generateSecretKey(length) { 
-  // Liste des caractères possibles pour la clé secrète
+  // caractères possibles pour la clé secrète
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
   // Crée un tableau de caractères aléatoires de la longueur spécifiée

@@ -1,5 +1,25 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  doctype html
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    title Document
+    link(rel='stylesheet' href='./css/bootstrap.min.css')
+    link(rel='stylesheet' href='./stylesheets/style.css')
+    link(rel='stylesheet' href='./css/boxicons.min.css')
+  include includes/navbar
+  header
+    .containter-gral-header
+      .image
+      .content-container
+        .right-text
+          .txt-content
+            | Paris Immobilier
+  script(src='./js/jquery.slim.min.js')
+  //script(src='./js/popper.min.js')
+  //script(src='./js/bootstrap.min.js')
+  script(src='./js/bootstrap.bundle.js')
+  script(src='./javascripts/home.js')
+

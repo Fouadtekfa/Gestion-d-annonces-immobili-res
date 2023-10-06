@@ -1,0 +1,61 @@
+extends layout
+
+block content
+  doctype html
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    title Document
+    link(rel='stylesheet' href='../css/bootstrap.min.css')
+    link(rel='stylesheet' href='../stylesheets/style.css')
+    link(rel='stylesheet' href='../stylesheets/forms.css')
+    link(rel='stylesheet' href='../css/boxicons.min.css')
+  include includes/navbar
+  .container-elements-page
+    .container-image
+    .container-gral
+      .container-form
+        form.create-announce-form
+          h2.title-form Créer un annonce
+          .input-group.mb-3
+            span#inputGroup-sizing-default.input-group-text Nom :
+            input.form-control(type='text' aria-label='Sizing example input' aria-describedby='inputGroup-sizing-default')
+          .input-group.mb-3
+            label.input-group-text(for='inputGroupSelect01') Type de bien
+            select#inputGroupSelect01.form-select
+              option(selected='') Choisir...
+              option(value='1') Vente
+              option(value='2') Location
+          .form-check(style="display:flex; align-items: center;")
+            input#defaultCheck1.form-check-input(type='checkbox' value='' style="width:25px; height:25px; margin-right:15px")
+            label.form-check-label(for='defaultCheck1' style="font-size:1rem; margin-top:2px;") Publier
+          .input-group.mb-3
+            label.input-group-text(for='inputGroupSelect01') Statut
+            select#inputGroupSelect01.form-select
+              option(selected='') Choisir...
+              option(value='1') Disponible
+              option(value='2') Loué
+              option(value='3') Vendu
+          .form-group
+            label(for='exampleFormControlTextarea1') Description
+            textarea#exampleFormControlTextarea1.form-control(rows='3')
+          .input-group.mb-3.price-input
+            span.input-group-text Prix
+            span.input-group-text $
+            input.form-control(type='number')
+          .input-group.mb-3
+            span#inputGroup-sizing-default.input-group-text Date :
+            input.form-control(type='date' aria-label='Sizing example input' aria-describedby='inputGroup-sizing-default')
+          .photosSection
+            h5(style="font-style:italic") Partage des photos de cette annonce!
+            br
+            .photos-container
+          .footer-form
+            button.btn.btn-primary(type='submit') Créer
+
+  script(src='../js/jquery.slim.min.js')
+  script(src='../js/bootstrap.bundle.js')
+  script(src='../js/boxicons.js')
+  script(src='../javascripts/announceCreation.js')
+  
+

@@ -5,6 +5,8 @@ require("dotenv").config();
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const session = require('express-session');
+const passport = require('passport');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -13,6 +15,9 @@ var createUserRouter=require('./routes/createuser');
 var loginUserRouter=require('./routes/login');
 
 var app = express();
+const key = generateSecretKey(32); 
+console.log(key);
+
 
 // connexion bdd 
 (async () => {
@@ -33,7 +38,18 @@ var app = express();
   }
 })();
 
+//crreer une session 
+app.use(
+  session({
+    secret:key , // Clé secrète pour signer les cookies de session
+    resave: false, // Ne pas enregistrer la session si elle n'a pas été modifiée
+    saveUninitialized: true, // Enregistrer une nouvelle session même si elle est vide
+  })
+);
 
+// Initialisation de Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -77,6 +93,21 @@ app.use(function(err, req, res, next) {
 
 
 
+
+function generateSecretKey(length) { 
+  // Liste des caractères possibles pour la clé secrète
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  // Crée un tableau de caractères aléatoires de la longueur spécifiée
+  const characterArray = Array.from({ length }, () => {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    return characters.charAt(randomIndex);
+  });
+
+  // Concatène les caractères en une seule chaîne pour former la clé secrète
+  const secretKey = characterArray.join('');
+  return secretKey;
+}
 
 
 module.exports = app;

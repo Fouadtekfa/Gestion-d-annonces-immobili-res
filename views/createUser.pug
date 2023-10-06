@@ -9,21 +9,21 @@ html(lang='en')
     link(rel='stylesheet' href='../stylesheets/forms.css')
     link(rel='stylesheet' href='../css/boxicons.min.css')
   body
-    include includes/navbar
+    include includes/navbar 
     .container-gral
       .container-form
-        form.create-user-form
+        form.create-user-form(action='/createuser', method='POST')
           h2.title-form S’inscrire
           .input-group.mb-3
           span#inputGroup-sizing-default.input-group-text
-            label(for='nom') Nom :
+            label(for='name') Nom :
             i.bx.bx-user
-            input.form-control(type='text', name='nom', id='nom',placeholder='Nom', aria-label='Sizing example input' aria-describedby='inputGroup-sizing-default' required)
+            input.form-control(type='text', name='name', id='name',placeholder='Nom', aria-label='Sizing example input' aria-describedby='inputGroup-sizing-default' required)
           .input-group.mb-3
           span#inputGroup-sizing-default.input-group-text 
-            label(for='prenom') Prénom :    
+            label(for='first_name') Prénom :    
             i.bx.bx-user
-            input.form-control(type='text', name='prenom', id='prenom',placeholder='Prénom' aria-label='Prénom' aria-describedby='inputGroup-sizing-default' required)
+            input.form-control(type='text', name='first_name', id='first_name',placeholder='Prénom' aria-label='Prénom' aria-describedby='inputGroup-sizing-default' required)
           .input-group.mb-3
           span#inputGroup-sizing-default.input-group-text
             label(for='email') E-mail :
@@ -35,6 +35,11 @@ html(lang='en')
             label(for='password') Mot de passe :
               i.bx.bx-lock
             input.form-control(type='password', name='password', id='password', aria-label='Mot de passe' aria-describedby='inputGroup-sizing-default' required)
+            input-group.mb-3
+          span#inputGroup-sizing-default.input-group-text
+            label(for='ConfirmPassword') Confirmer votre mot de passe :
+              i.bx.bx-lock
+            input.form-control(type='Password', name='ConfirmPassword', id='ConfirmPassword', aria-label='Mot de passe' aria-describedby='inputGroup-sizing-default' required)
           .footer-form
             button.btn.btn-primary(type='submit') S'inscrire
             a.btn.btn-secondary(href='/users') Annuler

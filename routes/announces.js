@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 const Announce = require('../model/announce');
-
 const hostname = 'localhost';
 const port = 3000;
+
 
 /* GET home page. */
 router.get('/create', function(req, res, next) {
@@ -15,19 +15,20 @@ router.get('/create', function(req, res, next) {
 
 router.post('/create', async (req, res) => {
   try {
-    // recuperer les données du formulaire
-    const { name, type, published, status, description, price, date, photos } = req.body;
+
+    let obj = { 
+      name: req.body.name,
+      type: req.body.type,
+      published: req.body.published,
+      status: req.body.status,
+      description: req.body.description,
+      price: req.body.price,
+      date: req.body.date,
+      photos: req.body.photos ? req.body.photos : []
+    };
+
     // créer une nouvelle annonce
-    const newAnnounce = new Announce({
-      name,
-      type,
-      published,
-      status,
-      description,
-      price,
-      date,
-      photos,
-    });
+    const newAnnounce = new Announce(obj);
 
     // enregistrez l'annonce dans la base de données
     await newAnnounce.save();

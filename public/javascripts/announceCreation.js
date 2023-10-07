@@ -1,7 +1,11 @@
+var generateId = () => { return Date.now().toString(24) + Math.random().toString( 24).substring( 2 ); };
+
 $( document ).ready(function() {
     $( '.container-image' ).css( { opacity: '0.4' } );
     $( '.container-form' ).css( { 'margin': '0 0 0 50px', opacity: '1' } );
     createNewPhoto();
+
+    $ ( '#form-create-announce' ).on( 'submit', createAnnounceHandler );
 });
 
 
@@ -13,8 +17,9 @@ function createNewPhoto() {
     let divContainer = $( `<div class="containerPhoto"><div><i class='bx bxs-camera camera-icon'>+</i></div></div> `);
     container_elements.append( divContainer );
 
-    let input = $('<input type="file" accept="image/png, image/gif, image/jpeg, image/jpg">');
+    let input = $('<input name="image" class="createImage" type="file" accept="image/png, image/gif, image/jpeg, image/jpg" style="display: none">');
 
+    $( container_elements ).append( input );
     $('.photos-container').append( container_elements );
 
     $( divContainer ).on( 'click', () => {
@@ -105,4 +110,78 @@ function chargeimage( file, divContainer, container_elements, src ) {
     $( $trash ).on('click', function() {
         $( container_elements ).remove();
     } );
+}
+
+
+function createAnnounceHandler( e ) {
+    e.preventDefault();
+    console.log('submit');
+    // Enregistrae les images
+    const form = $('#form-create-announce')[0];
+    const formData = new FormData(form);
+    
+    // Sauvegardes les objets des images pour la base de donnees
+    let fileNamesToSave = [];
+
+    // Recuperer les inputs des images
+    const inputs = form.querySelectorAll('.createImage');
+    inputs.forEach((input, index) => {
+        const file = input.files[0];
+        if (file) {
+            let fileObj = {
+                filename: generateId(),
+                originalName: file.name
+            };
+            fileNamesToSave.push( fileObj );
+            let ext = file.name.split('.').pop();
+            const newName = `${fileObj.filename}.${ext}`;
+            formData.set('image', file, newName);   
+        }
+    });
+
+    if( fileNamesToSave.length > 0 ) {
+        // Savegarder les images dans le servur
+        $.ajax({
+            url : '/upload',
+            type : 'POST',
+            data : formData,
+            processData: false,
+            contentType: false,
+            success : function(result, status, error) {
+                console.log('calling next');
+                next( fileNamesToSave );
+            },
+            error : function(result, status, error) {
+                console.error('Error al guardar la imagen');
+            },
+        });
+    } else {
+        next();
+    }
+
+    function next( fileNamesToSave ) {    
+        let dataToSend = { 
+            name: $( '#name-announce' ).val(),
+            type: $( '#type-announce' ).val(),
+            published: $( '#publish-announce' ).is( ':checked' ),
+            status: $( '#status-announce' ).val(),
+            description: $( '#description-announce').val(),
+            price: $( '#price-anounce' ).val(),
+            date: $( '#date-announce' ).val(),
+            photos: fileNamesToSave
+        }
+        $.ajax({
+            url : '/announces/create',
+            type : 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify( dataToSend ),
+            processData: false,
+            success : function(result, status, error) {
+                
+            },
+            error : function(result, status, error) {
+                console.error('Erreur: ' + error);
+            },
+        });
+    }
 }

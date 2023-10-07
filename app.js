@@ -4,6 +4,7 @@ var mongoose = require ('mongoose');
 require("dotenv").config();
 var path = require('path');
 var cookieParser = require('cookie-parser');
+
 var logger = require('morgan');
 const session = require('express-session');
 const passport = require('passport');
@@ -15,8 +16,6 @@ var announcesRouter = require('./routes/announces');
 var app = express();
 const key = generateSecretKey(32); 
 console.log(key);
-
-
 // connexion bdd 
 (async () => {
   try {

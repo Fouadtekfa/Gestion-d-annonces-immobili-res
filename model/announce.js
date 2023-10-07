@@ -22,9 +22,9 @@ const announceSchema = new Schema({
   description: String,
   price: Number,
   date: Date,
-  photos: [String], // on stockez que URL des photos
+  photos: [], // on stockez que URL des photos
 });
 
-const Announce = mongoose.model('Announce', announceSchema);
+const Announce = mongoose.model('announces', announceSchema);
 
 module.exports = Announce;

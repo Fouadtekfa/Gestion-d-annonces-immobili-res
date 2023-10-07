@@ -24,7 +24,8 @@ router.post('/create', async (req, res) => {
       description: req.body.description,
       price: req.body.price,
       date: req.body.date,
-      photos: req.body.photos ? req.body.photos : []
+      photos: req.body.photos ? req.body.photos : [],
+      by: req.session.userId 
     };
 
     // créer une nouvelle annonce
@@ -38,6 +39,14 @@ router.post('/create', async (req, res) => {
     //pour indiquer au client qu'une erreur interne du serveur s'est produite lors de la création de l'annonce
     res.status(500).json({ message: 'une erreur s\'est produite lors de la création de l\'annonce' });
   }
+});
+
+router.get('/all', function(req, res, next) {
+  Announce.find({}).then( function( announces ) {
+    res.json( announces );
+  }).catch( function( err ) {
+    console.log( err );
+  } );
 });
 
 

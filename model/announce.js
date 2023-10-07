@@ -23,6 +23,7 @@ const announceSchema = new Schema({
   price: Number,
   date: Date,
   photos: [], // on stockez que URL des photos
+  by:String
 });
 
 const Announce = mongoose.model('announces', announceSchema);

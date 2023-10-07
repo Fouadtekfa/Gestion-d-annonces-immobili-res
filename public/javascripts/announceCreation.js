@@ -135,7 +135,7 @@ function createAnnounceHandler( e ) {
             fileNamesToSave.push( fileObj );
             let ext = file.name.split('.').pop();
             const newName = `${fileObj.filename}.${ext}`;
-            formData.set('image', file, newName);   
+            formData.append('image', file, newName);   
         }
     });
 

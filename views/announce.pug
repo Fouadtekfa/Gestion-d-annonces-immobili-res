@@ -15,37 +15,37 @@ block content
     .container-image
     .container-gral
       .container-form
-        form.create-announce-form
+        form.create-announce-form(action='/announces/create', method='POST')
           h2.title-form Créer un annonce
           .input-group.mb-3
             span#inputGroup-sizing-default.input-group-text Nom :
-            input.form-control(type='text' aria-label='Sizing example input' aria-describedby='inputGroup-sizing-default')
+            input.form-control(type='text' , name='name' aria-label='Sizing example input', aria-describedby='inputGroup-sizing-default')
           .input-group.mb-3
             label.input-group-text(for='inputGroupSelect01') Type de bien
-            select#inputGroupSelect01.form-select
-              option(selected='') Choisir...
-              option(value='1') Vente
-              option(value='2') Location
+            select#inputGroupSelect01.form-select(name='type', required)
+              option(value='', disabled, selected) Choisir...
+              option(value='Vente') Vente
+              option(value='Location') Location
           .form-check(style="display:flex; align-items: center;")
-            input#defaultCheck1.form-check-input(type='checkbox' value='' style="width:25px; height:25px; margin-right:15px")
+            input#defaultCheck1.form-check-input(type='checkbox' value='true' name='published' style="width:25px; height:25px; margin-right:15px")
             label.form-check-label(for='defaultCheck1' style="font-size:1rem; margin-top:2px;") Publier
           .input-group.mb-3
             label.input-group-text(for='inputGroupSelect01') Statut
-            select#inputGroupSelect01.form-select
-              option(selected='') Choisir...
-              option(value='1') Disponible
-              option(value='2') Loué
-              option(value='3') Vendu
+            select#inputGroupSelect01.form-select(name='status', required)
+              option(value='', disabled, selected) Choisir...
+              option(value='Disponible') Disponible
+              option(value='Loué') Loué
+              option(value='Vendu') Vendu
           .form-group
             label(for='exampleFormControlTextarea1') Description
-            textarea#exampleFormControlTextarea1.form-control(rows='3')
+            textarea#exampleFormControlTextarea1.form-control(name='description', rows='3',required)
           .input-group.mb-3.price-input
             span.input-group-text Prix
-            span.input-group-text $
-            input.form-control(type='number')
+            span.input-group-text €
+            input.form-control(type='number', name='price',required) 
           .input-group.mb-3
             span#inputGroup-sizing-default.input-group-text Date :
-            input.form-control(type='date' aria-label='Sizing example input' aria-describedby='inputGroup-sizing-default')
+            input.form-control(type='date', name='date' aria-label='Sizing example input' aria-describedby='inputGroup-sizing-default' required)
           .photosSection
             h5(style="font-style:italic") Partage des photos de cette annonce!
             br

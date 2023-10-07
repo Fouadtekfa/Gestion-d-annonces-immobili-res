@@ -17,7 +17,6 @@ router.post('/create', async (req, res) => {
   try {
     // recuperer les données du formulaire
     const { name, type, published, status, description, price, date, photos } = req.body;
-      console.log(name, type, published, status, description, price, date, photos);
     // créer une nouvelle annonce
     const newAnnounce = new Announce({
       name,
@@ -29,8 +28,6 @@ router.post('/create', async (req, res) => {
       date,
       photos,
     });
-
-    console.log(newAnnounce);
 
     // enregistrez l'annonce dans la base de données
     await newAnnounce.save();

@@ -11,8 +11,6 @@ const passport = require('passport');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var announcesRouter = require('./routes/announces');
-var createUserRouter=require('./routes/createuser');
-var loginUserRouter=require('./routes/login');
 
 var app = express();
 const key = generateSecretKey(32); 
@@ -72,8 +70,7 @@ app.use('/js', express.static(path.join(__dirname, 'node_modules/boxicons/dist')
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/announces', announcesRouter);
-app.use('/',createUserRouter);
-app.use("/",loginUserRouter);
+
 //login
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -90,9 +87,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
-
 
 function generateSecretKey(length) { 
   // caractères possibles pour la clé secrète

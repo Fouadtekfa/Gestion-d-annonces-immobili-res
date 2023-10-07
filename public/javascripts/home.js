@@ -20,6 +20,7 @@ function getAllAnnounces( fn ) {
 function createSectionAnnounces( announces ) {
     announces = announces.filter( a => a.published );
     announces.forEach( announce => {
+        console.log('create');
         let indexPhotoShow = 0;
         let container = $( '#announces-container' );
         
@@ -32,6 +33,9 @@ function createSectionAnnounces( announces ) {
         let images = announce.photos;
         if( images.length > 0 ) {
             createImageInContainer( images, indexPhotoShow, announceHTML );
+        } else {
+            let images = [ { filename: 'no-image', originalName: 'no-image.jpg' } ];
+            createImageInContainer( images, 0, announceHTML );
         }
         
         // Details

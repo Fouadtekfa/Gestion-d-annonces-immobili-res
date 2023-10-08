@@ -15,9 +15,9 @@ router.get('/', function(req, res, next) {
 router.get('/login', function(req, res, next) {
   res.render('login', { 
     title: 'login',
-    default_directory: 'http://' + hostname + ':' + port
+    default_directory: 'http://' + hostname + ':' + port,
+    user: req.session.user
    });
-
 });
 
 router.post('/login', async (req, res) => {
@@ -43,7 +43,7 @@ router.post('/login', async (req, res) => {
         }
       // maintient l'authentification de l'utilisateur en enregistrant son id dans la session 
       req.session.userId = user._id;
-      req.session.username = user.username;
+      req.session.user = user;
       res.redirect('/'); 
 
   } catch (error) {
@@ -51,6 +51,12 @@ router.post('/login', async (req, res) => {
       res.status(500).json({ message:'une erreur s\'est produite lors de l\'établissement de la connexion'});
   }
 });
+
+router.get('/logout', async (req, res) => {
+  req.session.destroy();
+  console.log('outtt');
+  res.redirect('/'); 
+} );
 
 /* GET page de création d'utilisateur */
 router.get('/createuser', function(req, res, next) {

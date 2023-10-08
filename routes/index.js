@@ -30,8 +30,9 @@ const multerImages = multer( {
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { 
-    title: 'Express',    
-    default_directory: 'http://' + hostname + ':' + port
+    title: 'Announces',    
+    default_directory: 'http://' + hostname + ':' + port,
+    user: req.session.user
    });
 });
 

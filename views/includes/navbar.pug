@@ -1,3 +1,11 @@
+script.
+      var userId = Object.freeze( "#{user ? user._id : null}" );
+      let isAdmin = '#{user ? user.isAdmin : false }';
+      console.log(isAdmin);
+      let admin = Object.freeze( isAdmin == true || isAdmin == 'true' ? true : false )
+      console.log(userId);
+      console.log(!userId ? 'no exists' : 'yes');
+      console.log(admin)
 .nav-screen
   nav.navbar.navbar-expand-md.navbar-dark.bg-dark
     .container-fluid
@@ -6,19 +14,24 @@
       #navbarTogglerDemo01.collapse.navbar-collapse
           ul.navbar-nav.me-auto.mb-2.mb-lg-0
             li.nav-item.active
-              a.nav-link(href=default_directory) Home 
+              a.nav-link(href=default_directory) Home           
           ul.navbar-nav.my-2.my-lg-0
-            li.nav-item.dropdown.annonces-nav-menu
-              a.nav-link.dropdown-toggle(href='#' role='button' data-bs-toggle='dropdown' aria-expanded='false') Annonces
-              ul.dropdown-menu
-                li
-                  a.dropdown-item(href=default_directory+'/announces/create') Créer une annonce
-                li
-                  hr.dropdown-divider
-                li
-                  a.dropdown-item(href=default_directory+'/myAnnounces') Voir mes annonces
-            li.nav-item
-              a.nav-link(href=default_directory+'/users/login') Connexion
-            li.nav-item
-              a.nav-link(href=default_directory+'/users/createuser') Créer un compte
+            if user && user.isAdmin
+              li.nav-item.dropdown.annonces-nav-menu
+                a.nav-link.dropdown-toggle(href='#' role='button' data-bs-toggle='dropdown' aria-expanded='false') Annonces
+                ul.dropdown-menu
+                  li
+                    a.dropdown-item(href=default_directory+'/announces/create') Créer une annonce
+                  li
+                    hr.dropdown-divider
+                  li
+                    a.dropdown-item(href=default_directory+'/myAnnounces') Voir mes annonces
+            if !user
+              li.nav-item
+                a.nav-link(href=default_directory+'/users/login') Connexion
+              li.nav-item
+                a.nav-link(href=default_directory+'/users/createuser') Créer un compte
+            else
+              li.nav-item
+                a.nav-link(href=default_directory+'/users/logout') Deconnexion
 

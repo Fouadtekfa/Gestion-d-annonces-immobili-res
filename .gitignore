@@ -3,3 +3,4 @@ data
 .idea
 .env
 package-lock.json
+public/images/uploads

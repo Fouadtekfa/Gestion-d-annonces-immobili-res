@@ -1,3 +1,8 @@
+html, body {
+  height: 100;
+  overflow: scroll;
+}
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -43,6 +48,141 @@ display: none;
   flex-wrap: wrap;
 }
 
+#gral-container {
+  width: 100%;
+  min-height: 100vh;
+  height: fit-content;
+  padding: 20px;
+  margin-top: 15%;
+}
+
+.containerAnnounce {
+  /*height: 200px;*/
+  width: 90%;
+  border-radius: 10px;
+  background-color: white;
+  border: 1px solid rgb(141, 141, 141);
+  overflow: hidden;
+  -webkit-box-shadow: 4px 6px 20px -5px #000000; 
+  box-shadow: 4px 6px 20px -5px #000000;
+  min-height: fit-content;
+  margin: 20px 0;
+}
+
+#announces-container {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.title-announce {
+  padding: 10px;
+  background-color: rgba(194, 194, 194, 0.137);
+  border-bottom: 1px solid rgb(172, 171, 171);
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.pencil-edit {
+  display: inline-flex;
+  font-size:1.5rem;
+  cursor: pointer;
+}
+
+.announce-image-container {
+  height: 200px;
+  width: 100%;
+}
+
+.image-container-announce-body {
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  display: inline-flex;
+}
+
+.btn-direction-image-container {
+  display: inline-flex;
+  background-color: rgba(168, 167, 167, 0.342);
+  height: 100%;
+  width: 30px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 1s ease;
+}
+
+.btn-direction-image-container:hover {
+  background-color: rgba(109, 108, 108, 0.623);
+  width: 32px;
+}
+
+.image-announce {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: 80%;
+  transition: all 0.7s ease;
+  opacity: 0;
+}
+
+.dropdown-menu[data-bs-popper] {
+  left: -75px !important;
+}
+
+.directions {
+  color: white;
+  font-size: 2rem;
+}
+
+.details-container {
+  padding: 10px;
+}
+
+.label-details {
+  font-weight: bold;
+}
+
+footer {  
+  background-color: solid;
+  background-color: black;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  height: 40px;
+  color: white;
+}
+
+#footer-container {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  padding-top: 10px;
+  width: 100%;
+}
+
+#filter-annonces {
+  display: inline-flex;
+}
+
+#filter-annonces button {
+  margin: 0 20px;
+  cursor: pointer;
+}
+
+#title-publish {
+  width: 100%;
+  text-align: center;
+}
+
 @media only screen and (min-width: 600px) {
   
   header {
@@ -73,7 +213,6 @@ display: none;
     opacity: 0;
     transition: opacity 3s ease-in-out;
   }
-
 
   header .content-container {
     /*background-color: crimson;*/
@@ -123,6 +262,17 @@ display: none;
 
   nav .annonces-nav-menu {
     margin-right: 20px;
+  }
+
+  #gral-container {
+    margin-top: 0;
+  }
+
+  .containerAnnounce {
+    min-height: 350px;
+    width: 300px;
+    margin:  20px;
+    height: fit-content;
   }
 }
 

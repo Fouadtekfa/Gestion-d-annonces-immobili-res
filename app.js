@@ -4,6 +4,7 @@ var mongoose = require ('mongoose');
 require("dotenv").config();
 var path = require('path');
 var cookieParser = require('cookie-parser');
+
 var logger = require('morgan');
 const session = require('express-session');
 const passport = require('passport');
@@ -11,14 +12,11 @@ const passport = require('passport');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var announcesRouter = require('./routes/announces');
-var createUserRouter=require('./routes/createuser');
-var loginUserRouter=require('./routes/login');
+var commentaireRouter=require('./routes/announces')
 
 var app = express();
 const key = generateSecretKey(32); 
 console.log(key);
-
-
 // connexion bdd 
 (async () => {
   try {
@@ -67,13 +65,16 @@ app.use('/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/
 app.use('/js', express.static(path.join(__dirname, 'node_modules/jquery/dist')))
 app.use('/js', express.static(path.join(__dirname, 'node_modules/popper.js/dist/umd')))
 app.use('/js', express.static(path.join(__dirname, 'node_modules/boxicons/dist')))
+app.use('/js', express.static(path.join(__dirname, 'node_modules/moment/src')))
+app.use('/js', express.static(path.join(__dirname, 'node_modules/moment/src/lib/utils')))
 
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/announces', announcesRouter);
-app.use('/',createUserRouter);
-app.use("/",loginUserRouter);
+//pour le teste 
+app.use('/', commentaireRouter);
+//commentaire
 //login
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -90,9 +91,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
-
 
 function generateSecretKey(length) { 
   // caractères possibles pour la clé secrète

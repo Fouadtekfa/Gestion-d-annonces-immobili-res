@@ -25,10 +25,7 @@ const announceSchema = new Schema({
   photos: [], // on stockez que URL des photos
   by:String,
   comments: [{
-    user_id: {
-      type: String,
-      //required: true,
-    },
+    user_id: String,
     history: [{
       id_user: {
         type: String,

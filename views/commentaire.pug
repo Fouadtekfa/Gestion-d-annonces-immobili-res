@@ -4,24 +4,33 @@ html
     meta(charset='UTF-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     title Création d'Utilisateur
-    link(rel='stylesheet', href='../../css/bootstrap.min.css')
-    link(rel='stylesheet', href='../../stylesheets/style.css')
-    link(rel='stylesheet', href='../../stylesheets/forms.css')
-    link(rel='stylesheet', href='../../css/boxicons.min.css')
+    link(rel='stylesheet', href='/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/forms.css')
+    link(rel='stylesheet', href='/stylesheets/comments.css')
+    link(rel='stylesheet', href='/css/boxicons.min.css')
+  script.
+      var announceId = Object.freeze( "#{announce ? announce._id : null}" );
   body
     include includes/navbar 
+    #gral-container-announce
+      #announce-info
+        #announces-container
+      #comments-section
+        #title-coments
+          h5(style=("text-align: center")) Commentaires
+        #container-comments
+          #container-comments-content
 
-    
-    .container
-     
-      form#comment-form(action=`/announce/${id}/commentaire/ajouter`, method='POST')
-        .mb-3
-          h3.text-center Ajouter un commentaire
-        .mb-3
-          label.form-label(for='comment-content') Contenu du commentaire
-          textarea#comment-content.form-control(name='commentaire', rows='3', required)
-        .mb-3.text-center
-          button.btn.btn-primary(type='submit') Ajouter le commentaire
+        #container-send
+          if user && !user.isAdmin
+            form#comment-form(action=`/announce/${id}/commentaire/ajouter`, method='POST')
+              .mb-3
+                label.form-label(for='comment-content') Ajouter un commentaire
+                textarea#comment-content.form-control(name='commentaire', rows='3', required)
+              .mb-3.text-center
+                button.btn.btn-primary(type='submit') Envoyer
+      
 
     // Section pour afficher les commentaires
     if comments && comments.length > 0
@@ -38,15 +47,8 @@ html
      #footer-container
       h5 TP Announces
 
-    script(src='../../js/jquery.slim.min.js')
-    script(src='../../js/bootstrap.bundle.js')
-    script(src='../../js/boxicons.js')
-    script(src='../../javascripts/announceCreation.js')
-    
-
-    script.
-      function formatDate(dateString) {
-        const options = { day: '2-digit', month: '2-digit', year: '2-digit' };
-        const date = new Date(dateString);
-        return date.toLocaleDateString('fr-FR', options);
-      }
+    script(src='/js/jquery.min.js')
+    script(src='/javascripts/library/moment.js')
+    script(src='/javascripts/general.js')
+    script(src='/js/bootstrap.bundle.js')
+    script(src='/javascripts/comments.js')

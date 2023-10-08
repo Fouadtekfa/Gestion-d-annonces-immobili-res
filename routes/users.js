@@ -24,6 +24,17 @@ router.get('/login', function(req, res, next) {
    });
 });
 
+router.get('/user/:id', function(req, res, next) {
+  User.findOne({
+    _id: req.params.id
+  }).then( function( usr ) {
+    res.json( usr );
+  }).catch( function( err ) {
+    console.log('error');
+    console.log( err );
+  } );
+});
+
 router.post('/login', async (req, res) => {
   try {
       const { email, password } = req.body;
@@ -56,9 +67,9 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/logout', async (req, res) => {
+router.get('/logou', async (req, res) => {
   req.session.destroy();
-  res.redirect('/'); 
+  res.redirect('/');
 } );
 
 /* GET page de création d'utilisateur */

@@ -106,5 +106,47 @@ router.delete('/announce/:id', function(req, res, next) {
   } );
 });
 
+router.get('/commentaire', (req, res) => {
+  // Simuler des données de commentaires pour le test ==> ca marche 
+  const comments = [
+    { history: [{ content: 'Commentaire 1', date: new Date() }] },
+    { history: [{ content: 'Commentaire 2', date: new Date() }] },
+    { history: [{ content: 'Commentaire 2', date: new Date() }] },
+    { history: [{ content: 'Commentaire 2', date: new Date() }] },
+    { history: [{ content: 'Commentaire 2', date: new Date() }] },
+    { history: [{ content: 'Commentaire 2', date: new Date() }] },
+    { history: [{ content: 'Commentaire 2', date: new Date() }] },
+    { history: [{ content: 'Commentaire 2', date: new Date() }] },
+    { history: [{ content: 'Commentaire 2', date: new Date() }] },
+    { history: [{ content: 'Commentaire 2', date: new Date() }] },
+    { history: [{ content: 'Commentaire 2', date: new Date() }] },
+  ];
+
+   
+  res.render('commentaire', { comments });
+});
+
+
+router.get('/announce/:id/commentaire', async (req, res) => {
+  try {
+    const announceId = req.params.id;
+    const announce = await Announce.findById(announceId);
+
+    if (!announce) {
+      return res.status(404).json({ message: 'Annonce non trouvée' });
+    }
+
+    const comments = announce.comments;
+
+    console.log(announce.comments);
+    res.render('commentaire', {
+      comments,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des commentaires' });
+  }
+});
 
 module.exports = router;

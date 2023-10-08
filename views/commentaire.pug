@@ -1,0 +1,47 @@
+doctype html
+html
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Création d'Utilisateur
+    link(rel='stylesheet', href='../css/bootstrap.min.css')
+    link(rel='stylesheet', href='../stylesheets/style.css')
+    link(rel='stylesheet', href='../stylesheets/forms.css')
+    link(rel='stylesheet', href='../css/boxicons.min.css')
+  body
+    include includes/navbar 
+
+    
+    .container
+      form#comment-form(action='/comment/add', method='POST')
+        .mb-3
+          h3.text-center Ajouter un commentaire
+        .mb-3
+          label.form-label(for='comment-content') Contenu du commentaire
+          textarea#comment-content.form-control(name='comment-content', rows='3', required)
+        .mb-3.text-center
+          button.btn.btn-primary(type='submit') Ajouter le commentaire
+
+    // Section pour afficher les commentaires
+    if comments && comments.length > 0
+      .container.mt-5
+        h3.text-center Commentaires
+        each comment in comments
+          .card.mt-3
+            .card-body
+              p.card-text= comment.history[0].content
+              p.card-subtitle.mb-2.text-muted Date: #{comment.history[0].date}
+    else
+      p.mt-5.text-center Il n'y a pas encore de commentaires.
+
+    script(src='../js/jquery.slim.min.js')
+    script(src='../js/bootstrap.bundle.js')
+    script(src='../js/boxicons.js')
+    script(src='../javascripts/announceCreation.js')
+
+    script.
+      function formatDate(dateString) {
+        const options = { day: '2-digit', month: '2-digit', year: '2-digit' };
+        const date = new Date(dateString);
+        return date.toLocaleDateString('fr-FR', options);
+      }

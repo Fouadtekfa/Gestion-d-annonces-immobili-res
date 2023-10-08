@@ -12,6 +12,7 @@ const passport = require('passport');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var announcesRouter = require('./routes/announces');
+var commentaireRouter=require('./routes/announces')
 
 var app = express();
 const key = generateSecretKey(32); 
@@ -71,7 +72,9 @@ app.use('/js', express.static(path.join(__dirname, 'node_modules/moment/src/lib/
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/announces', announcesRouter);
-
+//pour le teste 
+app.use('/', commentaireRouter);
+//commentaire
 //login
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -56,11 +56,16 @@ function createSectionAnnounces( announces ) {
         let divContainer = $( `<div class="containerAnnounce"></div> `);
         let announceHTML = $('<div class="announce-image-container"/>');
         let spanPencil = admin ? $( '<span class="pencil-edit"><i class="bx bxs-edit-alt"></i></span>' ) : $( '<span></span>' ) ;
+        let spanComment = $('<span class="comment"><i class="bx bxs-comment"></i></span>');
         let title = $(`<div class="title-announce"><span style="width: 100%;">${announce.name} - ${announce.price}€</div>` );
         title.append( spanPencil );
+        title.append( spanComment );
 
         $( spanPencil ).on( 'click', function() {
             window.location.href = `/announces/create?id=${announce._id}`;
+        } );
+        $( spanComment ).on( 'click', function() {
+            window.location.href = `/announce/${announce._id}/commentaire`;
         } );
 
         divContainer.append(title);

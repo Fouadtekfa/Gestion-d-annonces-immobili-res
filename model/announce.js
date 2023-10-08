@@ -23,7 +23,31 @@ const announceSchema = new Schema({
   price: Number,
   date: Date,
   photos: [], // on stockez que URL des photos
-  by:String
+  by:String,
+  comments: [{
+    user_id: {
+      type: String,
+      //required: true,
+    },
+    history: [{
+      id_user: {
+        type: String,
+        //required: true,
+      },
+      content: {
+        type: String,
+        //required: true,
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+      read: {
+        type: Boolean,
+        default: true,
+      },
+    }],
+  }],
 });
 
 const Announce = mongoose.model('announces', announceSchema);

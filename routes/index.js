@@ -4,6 +4,7 @@ var path = require( 'path' );
 var express = require('express');
 const moment = require('moment');
 var router = express.Router();
+var fs = require('fs');
 
 const hostname = 'localhost';
 const port = 3000;
@@ -37,9 +38,24 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/upload', multerImages.array( 'image' ), function(req, res, next) {
-  console.log('check fileeee');
-  console.log(req.file);console.log(req.files);
   res.sendStatus( 200 );
+});
+
+router.delete('/deleteFile', function(req, res, next) {
+  let files = fs.readdirSync( path.join( __dirname, '../public/images/uploads/') );  
+  files.forEach( file => {
+    let ext = path.extname( file );
+    let name = path.basename( file, ext );
+    let filename = name + ext;
+    if( req.query.files.includes( filename ) ) {
+      try {
+        fs.unlinkSync( path.join(__dirname, '../public/images/uploads/', filename))
+      } catch ( err ) {
+        console.log( err );
+      }
+    }
+  })
+  res.sendStatus( 200 );  
 });
 
 module.exports = router;

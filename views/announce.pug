@@ -45,7 +45,7 @@ block content
             input#price-anounce.form-control(type='number', name='price',required) 
           .input-group.mb-3
             span.input-group-text Date :
-            input#date-announce.form-control(type='date', name='date' aria-label='Sizing example input' aria-describedby='inputGroup-sizing-default' required)
+            input#date-announce.form-control(type='date', name='date' aria-label='Sizing example input' aria-describedby='inputGroup-sizing-default' required placeholder="dd/mm/yyyy")
           .photosSection
             h5(style="font-style:italic") Partage des photos de cette annonce!
             br
@@ -54,6 +54,8 @@ block content
             button.btn.btn-primary(type='submit') Créer
 
   script(src='../js/jquery.min.js')
+  script(src='../javascripts/library/moment.js')
+  script(src='../javascripts/general.js')
   script(src='../js/bootstrap.bundle.js')
   script(src='../js/boxicons.js')
   script(src='../javascripts/announceCreation.js')

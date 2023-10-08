@@ -83,6 +83,17 @@ display: none;
   background-color: rgba(194, 194, 194, 0.137);
   border-bottom: 1px solid rgb(172, 171, 171);
   text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.pencil-edit {
+  display: inline-flex;
+  font-size:1.5rem;
+  cursor: pointer;
 }
 
 .announce-image-container {
@@ -244,9 +255,10 @@ footer {
   }
 
   .containerAnnounce {
-    height: 350px;
+    min-height: 350px;
     width: 300px;
     margin:  20px;
+    height: fit-content;
   }
 }
 

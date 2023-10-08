@@ -20,14 +20,19 @@ function getAllAnnounces( fn ) {
 function createSectionAnnounces( announces ) {
     announces = announces.filter( a => a.published );
     announces.forEach( announce => {
-        console.log('create');
         let indexPhotoShow = 0;
         let container = $( '#announces-container' );
         
         let divContainer = $( `<div class="containerAnnounce"></div> `);
         let announceHTML = $('<div class="announce-image-container"/>');
-        
-        let title = $(`<div class="title-announce"><span>${announce.name} - ${announce.price}€</span></div>` );
+        let spanPencil = admin ? $( '<span class="pencil-edit"><i class="bx bxs-edit-alt"></i></span>' ) : $( '<span></span>' ) ;
+        let title = $(`<div class="title-announce"><span style="width: 100%;">${announce.name} - ${announce.price}€</div>` );
+        title.append( spanPencil );
+
+        $( spanPencil ).on( 'click', function() {
+            window.location.href = `/announces/create?id=${announce._id}`;
+        } );
+
         divContainer.append(title);
         
         let images = announce.photos;
@@ -43,10 +48,12 @@ function createSectionAnnounces( announces ) {
         detailsContainer.append(`<span class="label-details">Disponible à partir de: </span><span>${new Date( announce.date ).toLocaleDateString('fr-FR') }</span>` )
         detailsContainer.append(`<br><br><span class="label-details">Type d'annonce: </span><span>${announce.type}</span>` );
         detailsContainer.append(`<br><br><span class="label-details">Status: </span><span>${announce.status}</span>` );
+        detailsContainer.append(`<br><br><span class="label-details">Description: </span><span>${announce.description}</span>` );
         
         divContainer.append(announceHTML);
         divContainer.append( detailsContainer );
         container.append(divContainer);
+        
         
     });
 }

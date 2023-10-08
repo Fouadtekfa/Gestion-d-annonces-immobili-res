@@ -65,6 +65,7 @@ app.use('/js', express.static(path.join(__dirname, 'node_modules/jquery/dist')))
 app.use('/js', express.static(path.join(__dirname, 'node_modules/popper.js/dist/umd')))
 app.use('/js', express.static(path.join(__dirname, 'node_modules/boxicons/dist')))
 app.use('/js', express.static(path.join(__dirname, 'node_modules/moment/src')))
+app.use('/js', express.static(path.join(__dirname, 'node_modules/moment/src/lib/utils')))
 
 
 app.use('/', indexRouter);

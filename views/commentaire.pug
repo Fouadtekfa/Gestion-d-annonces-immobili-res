@@ -4,10 +4,10 @@ html
     meta(charset='UTF-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     title Création d'Utilisateur
-    link(rel='stylesheet', href='../css/bootstrap.min.css')
-    link(rel='stylesheet', href='../stylesheets/style.css')
-    link(rel='stylesheet', href='../stylesheets/forms.css')
-    link(rel='stylesheet', href='../css/boxicons.min.css')
+    link(rel='stylesheet', href='../../css/bootstrap.min.css')
+    link(rel='stylesheet', href='../../stylesheets/style.css')
+    link(rel='stylesheet', href='../../stylesheets/forms.css')
+    link(rel='stylesheet', href='../../css/boxicons.min.css')
   body
     include includes/navbar 
 
@@ -33,11 +33,15 @@ html
               p.card-subtitle.mb-2.text-muted Date: #{comment.history[0].date}
     else
       p.mt-5.text-center Il n'y a pas encore de commentaires.
+    footer
+     #footer-container
+      h5 TP Announces
 
-    script(src='../js/jquery.slim.min.js')
-    script(src='../js/bootstrap.bundle.js')
-    script(src='../js/boxicons.js')
-    script(src='../javascripts/announceCreation.js')
+    script(src='../../js/jquery.slim.min.js')
+    script(src='../../js/bootstrap.bundle.js')
+    script(src='../../js/boxicons.js')
+    script(src='../../javascripts/announceCreation.js')
+    
 
     script.
       function formatDate(dateString) {

@@ -169,6 +169,20 @@ footer {
   width: 100%;
 }
 
+#filter-annonces {
+  display: inline-flex;
+}
+
+#filter-annonces button {
+  margin: 0 20px;
+  cursor: pointer;
+}
+
+#title-publish {
+  width: 100%;
+  text-align: center;
+}
+
 @media only screen and (min-width: 600px) {
   
   header {

@@ -19,9 +19,16 @@ block content
             | Paris Immobilier
   body
     #gral-container
+      if user && user.isAdmin
+        #title-publish
+          h3 Publiés
+        #filter-annonces
+          button#all.btn.btn-primary(type='button' style='margin-right:10px') Tous
+          button#public.btn.btn-primary(type='button' style='margin-right:10px') Publiés
+          button#noPublic.btn.btn-primary(type='button' style='margin-right:10px') Non poubliés
       #announces-container
   footer
-    #footer-container 
+    #footer-container
       h5 TP Announces
 
   script(src='../js/jquery.min.js')

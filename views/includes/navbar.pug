@@ -1,11 +1,7 @@
 script.
       var userId = Object.freeze( "#{user ? user._id : null}" );
       let isAdmin = '#{user ? user.isAdmin : false }';
-      console.log(isAdmin);
       let admin = Object.freeze( isAdmin == true || isAdmin == 'true' ? true : false )
-      console.log(userId);
-      console.log(!userId ? 'no exists' : 'yes');
-      console.log(admin)
 .nav-screen
   nav.navbar.navbar-expand-md.navbar-dark.bg-dark
     .container-fluid
@@ -24,8 +20,6 @@ script.
                     a.dropdown-item(href=default_directory+'/announces/create') Créer une annonce
                   li
                     hr.dropdown-divider
-                  li
-                    a.dropdown-item(href=default_directory+'/myAnnounces') Voir mes annonces
             if !user
               li.nav-item
                 a.nav-link(href=default_directory+'/users/login') Connexion

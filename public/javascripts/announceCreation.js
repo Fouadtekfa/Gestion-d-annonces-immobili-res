@@ -169,6 +169,7 @@ function submitHandler( e, fn ) {
 
     // Recuperer les inputs des images
     const inputs = form.querySelectorAll('.createImage');
+    formData.delete('image');   
     inputs.forEach((input, index) => {
         const file = input.files[0];
         if (file) {
@@ -179,7 +180,7 @@ function submitHandler( e, fn ) {
             fileNamesToSave.push( fileObj );
             let ext = file.name.split('.').pop();
             const newName = `${fileObj.filename}.${ext}`;
-            formData.set('image', file, newName);   
+            formData.append('image', file, newName);   
         }
     });
 

@@ -9,6 +9,12 @@ const { ObjectId } = require('mongodb');
 
 /* GET home page. */
 router.get('/create', function(req, res, next) {
+  if( !req.session.user ) {
+    res.redirect('/');
+  } if( !req.session.user.isAdmin) {
+    res.redirect('/');
+  }
+
   res.render('announce', { 
     title: 'Creer un annonce',
     default_directory: 'http://' + hostname + ':' + port
@@ -80,6 +86,17 @@ router.get('/all', function(req, res, next) {
 
 router.get('/announce/:id', function(req, res, next) {
   Announce.findOne({
+    _id: req.params.id
+  }).then( function( announce ) {
+    res.json( announce );
+  }).catch( function( err ) {
+    console.log('error');
+    console.log( err );
+  } );
+});
+
+router.delete('/announce/:id', function(req, res, next) {
+  Announce.findOneAndDelete({
     _id: req.params.id
   }).then( function( announce ) {
     res.json( announce );

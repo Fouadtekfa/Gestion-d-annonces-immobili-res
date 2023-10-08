@@ -18,6 +18,14 @@ $( document ).ready(function() {
                 fillAnnounceData( res );
                 _announce = res;
                 createNewPhoto();
+                // Create a delete button
+                let btnDelete = $( '<button class="btn btn-danger" type="submit" style="margin-right: 20px">Supprimer</button>' );
+                $('.footer-form').prepend( btnDelete );
+        
+                $( btnDelete ).on( 'click', function( e ) {
+                    e.preventDefault();
+                    deleteAnnounce( _announce );
+                } );
             },
             error : function(result, status, error) {
                 console.error('Erreur: ' + error);
@@ -27,6 +35,8 @@ $( document ).ready(function() {
             e.preventDefault();
             submitHandler( this, modifyAnnounceHandler );
         } );
+
+
     } else {
         // Create Page
         $ ( '#form-create-announce' ).on( 'submit', function( e ) {
@@ -38,6 +48,46 @@ $( document ).ready(function() {
     
 });
 
+function deleteAnnounce( announce ) {
+    if( announce.photos.length > 0 ) {
+        announce.photos.forEach( p => {
+            let ext = p.originalName.split('.')[ 1 ];
+            imagesToDelete.push(`${p.filename}.${ext}`);
+        });
+
+        const query = $.param( { files: imagesToDelete } );
+
+        $.ajax({
+            url : `/deleteFile?${query}`,
+            type : 'DELETE',            
+            processData: false,
+            contentType: false,
+            success : function(result, status, error) {
+                next();
+            },
+            error : function(result, status, error) {
+                console.error('Erreur dans la suppression : ' + error);
+            },
+        });
+    } else {
+        next();
+    }
+
+    function next() {
+        $.ajax({
+            url : `/announces/announce/${announce._id}`,
+            type : 'DELETE',            
+            processData: false,
+            contentType: false,
+            success : function(result, status, error) {
+                window.location.href = '/';
+            },
+            error : function(result, status, error) {
+                console.error('Erreur dans la suppression : ' + error);
+            },
+        });
+    }
+}
 
 /**
  * Create a new photo element in the form section

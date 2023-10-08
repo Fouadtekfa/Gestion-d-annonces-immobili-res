@@ -13,6 +13,10 @@ router.get('/', function(req, res, next) {
 
 /* GET page login */
 router.get('/login', function(req, res, next) {
+  if( req.session.user ) {
+    res.redirect('/');
+  }
+
   res.render('login', { 
     title: 'login',
     default_directory: 'http://' + hostname + ':' + port,

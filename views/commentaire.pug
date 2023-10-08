@@ -13,12 +13,13 @@ html
 
     
     .container
-      form#comment-form(action='/comment/add', method='POST')
+     
+      form#comment-form(action=`/announce/${id}/commentaire/ajouter`, method='POST')
         .mb-3
           h3.text-center Ajouter un commentaire
         .mb-3
           label.form-label(for='comment-content') Contenu du commentaire
-          textarea#comment-content.form-control(name='comment-content', rows='3', required)
+          textarea#comment-content.form-control(name='commentaire', rows='3', required)
         .mb-3.text-center
           button.btn.btn-primary(type='submit') Ajouter le commentaire
 

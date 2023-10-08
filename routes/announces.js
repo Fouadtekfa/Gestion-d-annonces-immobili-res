@@ -127,6 +127,29 @@ router.get('/commentaire', (req, res) => {
 });
 
 
+// router.get('/announce/:id/commentaire', async (req, res) => {
+//   try {
+//     const announceId = req.params.id;
+//     const announce = await Announce.findById(announceId);
+
+//     if (!announce) {
+//       return res.status(404).json({ message: 'Annonce non trouvée' });
+//     }
+
+//     const comments = announce.comments;
+
+//     console.log(announce.comments);
+//     res.render('commentaire', {
+//       comments,
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Erreur lors de la récupération des commentaires' });
+//   }
+// });
+
+
 router.get('/announce/:id/commentaire', async (req, res) => {
   try {
     const announceId = req.params.id;
@@ -140,12 +163,56 @@ router.get('/announce/:id/commentaire', async (req, res) => {
 
     console.log(announce.comments);
     res.render('commentaire', {
-      comments,
+        comments: 
+        comments,
+        id: req.params.id
     });
 
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erreur lors de la récupération des commentaires' });
+  }
+});
+
+
+router.post('/announce/:id/commentaire/ajouter', async (req, res) => {
+  try {
+    const announceId = req.params.id;
+    console.log("====================================================================")
+    console.log(announceId)
+    const { user_id, commentaire } = req.body;
+    console.log("====================================================================")
+
+     console.log(req.session.userId);
+    // Vérifiez si l'utilisateur est connecté en contentvérifiant la session
+    if (!req.session.userId) {
+      return res.status(401).json({ message: 'Vous devez être connecté pour ajouter un commentaire' });
+    }
+    //console.log(commentaire,user_id);
+
+    const announce = await Announce.findById(announceId);
+
+    if (!announce) {
+      return res.status(404).json({ message: 'Annonce non trouvée' });
+    }
+    console.log("=========comm=============================")
+    console.log(commentaire)
+    const newComment = {
+      user_id: req.session.userId, // Utilisez l'ID de l'utilisateur connecté
+      history: [{
+        id_user: req.session.userId,
+        commentaire,
+      }],
+    };
+
+
+    announce.comments.push(newComment);
+    await announce.save();
+
+    res.redirect(`/announce/${announceId}/commentaire`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erreur lors de l\'ajout du commentaire' });
   }
 });
 

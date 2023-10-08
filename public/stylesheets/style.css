@@ -57,7 +57,7 @@ display: none;
 }
 
 .containerAnnounce {
-  height: 200px;
+  /*height: 200px;*/
   width: 90%;
   border-radius: 10px;
   background-color: white;
@@ -66,6 +66,7 @@ display: none;
   -webkit-box-shadow: 4px 6px 20px -5px #000000; 
   box-shadow: 4px 6px 20px -5px #000000;
   min-height: fit-content;
+  margin: 20px 0;
 }
 
 #announces-container {
@@ -74,6 +75,7 @@ display: none;
   width: 100%;
   padding-top: 20px;
   padding-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .title-announce {
@@ -244,7 +246,7 @@ footer {
   .containerAnnounce {
     height: 350px;
     width: 300px;
-    margin:  0 20px;
+    margin:  20px;
   }
 }
 

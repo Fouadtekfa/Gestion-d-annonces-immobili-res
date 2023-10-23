@@ -4,3 +4,4 @@ data
 .env
 package-lock.json
 public/images/uploads
+API_SERVER/api/openapi_exemple.yaml

@@ -1,4 +1,4 @@
-openapi: 1.0.0
+openapi: 3.0.3
 info:
   title: Announces Immpobiliers - API
   description: |-
@@ -15,9 +15,67 @@ tags:
 - name: announce
   description: Tout sur les Annonces
 paths:
-  /announce/:
+  /announces:
+    get:
+      tags:
+      - announce
+      summary: Get all announces
+      description: Get all announces dans la bd
+      operationId: getAllAnnounces
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Announce'
+                x-content-type: application/json
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Announce'
 components:
   schemas:
+    Announce:
+      required:
+      - name
+      - type
+      type: object
+      properties:
+        name:
+          type: string          
+          example: AnnounceParis
+        type:
+          type: string
+          enum:
+            - Vente
+            - Location
+        published:
+          type: boolean
+          example: false
+        status:
+          type: string
+          enum:
+            - Disponible
+            - Loué
+            - Vendu
+        description:
+          type: string
+        price:
+          type: number
+        date:
+          type: date
+        photos:
+          type: array
+        by:
+          type: string
+        comments:
+          type: array
+      xml:
+        name: announce
     ApiResponse:
       type: object
       properties:
@@ -44,15 +102,6 @@ components:
         application/xml:
           schema:
             $ref: '#/components/schemas/Announce'
-  securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
-          scopes:
-            write:announces: modify announces in your account
-            read:announces: read your announces
     api_key:
       type: apiKey
       name: api_key

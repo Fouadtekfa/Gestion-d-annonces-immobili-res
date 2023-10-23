@@ -3,9 +3,8 @@
 var utils = require('../utils/writer.js');
 var Announce = require('../service/AnnounceService');
 
-
 module.exports.getAllAnnounces = function findAnnounces (req, res, next, status) {
-  Pet.findAnnounces(status)
+  Announce.findAnnounces(status)
     .then(function (response) {
       utils.writeJson(res, response);
     })

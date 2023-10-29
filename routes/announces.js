@@ -6,8 +6,8 @@ const port = 3000;
 const { ObjectId } = require('mongodb');
 var axios = require('axios');
 const api = axios.create({
-  baseURL: 'http://localhost:8080',  // L'URL de votre serveur
-  withCredentials: true,  // Inclure les cookies (si nécessaire)
+  baseURL: 'http://localhost:8080',
+  withCredentials: true,
 });
 
 /* GET home page. */
@@ -88,14 +88,11 @@ router.get('/all', function(req, res, next) {
 });
 
 router.get('/announce/:id', function(req, res, next) {
-  Announce.findOne({
-    _id: req.params.id
-  }).then( function( announce ) {
-    res.json( announce );
-  }).catch( function( err ) {
-    console.log('error');
+  api.get(`/announce/${req.params.id}`).then( response => {
+    res.json(response.data);
+   }).catch( err => {
     console.log( err );
-  } );
+   });
 });
 
 router.delete('/announce/:id', function(req, res, next) {

@@ -4,8 +4,11 @@ const Announce = require('../model/announce');
 const hostname = 'localhost';
 const port = 3000;
 const { ObjectId } = require('mongodb');
-
-
+var axios = require('axios');
+const api = axios.create({
+  baseURL: 'http://localhost:8080',  // L'URL de votre serveur
+  withCredentials: true,  // Inclure les cookies (si nécessaire)
+});
 
 /* GET home page. */
 router.get('/create', function(req, res, next) {
@@ -77,11 +80,11 @@ router.post('/modify', async (req, res) => {
 });
 
 router.get('/all', function(req, res, next) {
-  Announce.find({}).then( function( announces ) {
-    res.json( announces );
-  }).catch( function( err ) {
-    console.log( err );
-  } );
+ api.get('/announces').then( response => {
+  res.json(response.data);
+ }).catch( err => {
+  console.log( err );
+ });
 });
 
 router.get('/announce/:id', function(req, res, next) {

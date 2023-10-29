@@ -5,7 +5,6 @@ var http = require('http');
 require("dotenv").config();
 var mongoose = require ('mongoose');
 
-
 var oas3Tools = require('oas3-tools');
 var serverPort = 8080;
 
@@ -26,7 +25,6 @@ var serverPort = 8080;
       throw new Error('Impossible de se connecter à la base de données MongoDB');
     }
   })();
-  
 
 // swaggerRouter configuration
 var options = {
@@ -43,4 +41,3 @@ http.createServer(app).listen(serverPort, function () {
     console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
     console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
 });
-

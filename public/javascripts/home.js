@@ -28,23 +28,8 @@ $( document ).ready(function() {
 });
 
 function getAllAnnounces( fn, published ) {
-    //fetch('http://localhost:8080/announces/all').then()
-    fetch("http://localhost:8080/announces", {
-        mode: 'no-cors',
-        credentials: 'include',
-        headers: {
-            "Content-Type": "application/json",
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-          }
-
-    }).then( annonces => {
-        console.log('annonces');
-        console.log(annonces);
-        fn( annonces, published );
-    } );
-    
-    /*$.ajax({
-        url : 'http://localhost:8080/announces/all',
+    $.ajax({
+        url : 'announces/all',
         type : 'GET',
         success : function( res ) {
             fn( res, published );
@@ -52,7 +37,7 @@ function getAllAnnounces( fn, published ) {
         error : function(result, status, error) {
             console.error('Erreur: ' + error);
         },
-    });*/
+    });
 }
 
 function createSectionAnnounces( announces ) {

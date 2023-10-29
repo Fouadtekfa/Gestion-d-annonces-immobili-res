@@ -37,17 +37,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Announce'
+      x-swagger-router-controller: Announce
 components:
   schemas:
     Announce:
       required:
-      - name
-      - type
+        - name
+        - type
       type: object
       properties:
         name:
           type: string          
-          example: AnnounceParis
+          example: "AnnounceParis"
         type:
           type: string
           enum:
@@ -65,17 +66,39 @@ components:
         description:
           type: string
         price:
-          type: number
+          type: integer
         date:
-          type: date
+          type: string
         photos:
           type: array
+          items:
+            type: string
         by:
           type: string
         comments:
           type: array
+          items:
+            $ref: '#/components/schemas/Comment'
       xml:
         name: announce
+    Comment:
+      properties:
+        user_id:
+          type: string
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/History'
+    History:
+      properties:
+        id_user:
+          type: string
+        content:
+          type: string
+        date:
+          type: string
+        read:
+          type: boolean
     ApiResponse:
       type: object
       properties:
@@ -102,7 +125,3 @@ components:
         application/xml:
           schema:
             $ref: '#/components/schemas/Announce'
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header

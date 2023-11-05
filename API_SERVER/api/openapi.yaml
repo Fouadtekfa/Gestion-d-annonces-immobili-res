@@ -69,6 +69,103 @@ paths:
         "404":
           description: Announce not found
       x-swagger-router-controller: Announce
+    delete:
+      tags:
+      - announce
+      summary: Delete announce
+      description: Delete announce
+      operationId: deleteAnnounce
+      parameters:
+      - name: announceId
+        in: path
+        description: The id that needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "400":
+          description: Invalid id supplied
+        "404":
+          description: Announce not found
+      x-swagger-router-controller: Announce
+  /announce/create:
+    post:
+      tags:
+      - announce
+      summary: Create an announce
+      description: Create an announce
+      operationId: addAnnounce
+      requestBody:
+        description: Create an announce
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Announce'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Announce'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Announce'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announce'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Announce'
+        "405":
+          description: Invalid input
+      x-swagger-router-controller: Announce
+  /announce/modify:
+    put:
+      tags:
+      - announce
+      summary: Update an announce
+      description: Update an announce
+      operationId: updateAnnounce
+      parameters:
+      - name: _id
+        in: query
+        description: id to be updated
+        required: true
+        style: form
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Update an announce
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Announce'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Announce'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Announce'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announce'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Announce'
+        "405":
+          description: Invalid input
+      x-swagger-router-controller: Announce
+
 components:
   schemas:
     Announce:
@@ -103,7 +200,7 @@ components:
         photos:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Photo'
         by:
           type: string
         comments:
@@ -130,6 +227,12 @@ components:
           type: string
         read:
           type: boolean
+    Photo:
+      properties:
+        filename:
+          type: string
+        originalName:
+          type: string
     ApiResponse:
       type: object
       properties:

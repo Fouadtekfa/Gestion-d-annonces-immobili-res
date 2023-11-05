@@ -25,58 +25,46 @@ router.get('/create', function(req, res, next) {
 });
 
 router.post('/create', async (req, res) => {
-  try {
+  let obj = { 
+    name: req.body.name,
+    type: req.body.type,
+    published: req.body.published,
+    status: req.body.status,
+    description: req.body.description,
+    price: parseInt(req.body.price),
+    date: req.body.date,
+    photos: req.body.photos ? req.body.photos : [],
+    by: req.session.userId,
+    comments: []
+  };
 
-    let obj = { 
-      name: req.body.name,
-      type: req.body.type,
-      published: req.body.published,
-      status: req.body.status,
-      description: req.body.description,
-      price: req.body.price,
-      date: req.body.date,
-      photos: req.body.photos ? req.body.photos : [],
-      by: req.session.userId 
-    };
-
-    // créer une nouvelle annonce
-    const newAnnounce = new Announce(obj);
-
-    // enregistrez l'annonce dans la base de données
-    await newAnnounce.save();
-    res.redirect('/'); // rediriger l'utilisateur vers la page d'accueil
-  } catch (error) {
-    console.error(error);
-    //pour indiquer au client qu'une erreur interne du serveur s'est produite lors de la création de l'annonce
-    res.status(500).json({ message: 'une erreur s\'est produite lors de la création de l\'annonce' });
-  }
+  api.post('/announce/create', obj ).then( response => {
+     res.redirect('/');
+   }).catch( err => {
+      console.error(err);
+      res.status(500).json({ message: 'une erreur s\'est produite lors de la création de l\'annonce' });
+   });
 });
 
 router.post('/modify', async (req, res) => {
-  try {
+  let obj = { 
+    name: req.body.name,
+    type: req.body.type,
+    published: req.body.published,
+    status: req.body.status,
+    description: req.body.description,
+    price: parseInt(req.body.price),
+    date: req.body.date,
+    photos: req.body.photos ? req.body.photos : [],
+    by: req.session.userId 
+  };
 
-    let obj = { 
-      name: req.body.name,
-      type: req.body.type,
-      published: req.body.published,
-      status: req.body.status,
-      description: req.body.description,
-      price: req.body.price,
-      date: req.body.date,
-      photos: req.body.photos ? req.body.photos : [],
-      by: req.session.userId 
-    };
-
-    const filter = { _id:  req.body._id };
-
-    // créer une nouvelle annonce
-    let doc = await Announce.findOneAndUpdate(filter, obj);
-    res.redirect(`/announces/create?id=${req.body._id}`); // rediriger l'utilisateur vers la page d'accueil
-  } catch (error) {
-    console.error(error);
-    //pour indiquer au client qu'une erreur interne du serveur s'est produite lors de la modification de l'annonce
-    res.status(500).json({ message: 'une erreur s\'est produite lors de la modification de l\'annonce' });
-  }
+  api.put(`/announce/modify?_id=${req.body._id}`, obj ).then( response => {
+    res.redirect('/');
+  }).catch( err => {
+     console.error(err);
+     res.status(500).json({ message: 'une erreur s\'est produite lors de la création de l\'annonce' });
+  });
 });
 
 router.get('/all', function(req, res, next) {
@@ -96,14 +84,11 @@ router.get('/announce/:id', function(req, res, next) {
 });
 
 router.delete('/announce/:id', function(req, res, next) {
-  Announce.findOneAndDelete({
-    _id: req.params.id
-  }).then( function( announce ) {
-    res.json( announce );
-  }).catch( function( err ) {
-    console.log('error');
+  api.delete(`/announce/${req.params.id}`).then( response => {
+    res.json(response.data);
+   }).catch( err => {
     console.log( err );
-  } );
+   });
 });
 
 router.get('/commentaire', (req, res) => {

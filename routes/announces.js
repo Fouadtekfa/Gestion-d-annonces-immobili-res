@@ -114,13 +114,12 @@ router.get('/commentaire', (req, res) => {
 router.get('/announce/:id/commentaire', async (req, res) => {
   try {
     const announceId = req.params.id;
-    const announce = await Announce.findById(announceId);
+    let announce = await api.get(`/announce/${announceId}`);
+    announce = announce.data;
 
-    if (!announce) {
+    if ( !announce ) {
       return res.status(404).json({ message: 'Annonce non trouvée' });
     }
-
-    const comments = announce.comments;
 
     res.render('commentaire', {
         announce: announce,

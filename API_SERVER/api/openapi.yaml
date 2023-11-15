@@ -1,14 +1,18 @@
 openapi: 3.0.3
 info:
-  title: Announces Immpobiliers - API
+  title: Announces Immobiliers - API
   description: |-
     Announces TP
+
+    Pour accéder à GraphQL Playground, veuillez cliquer [ici](http://localhost:4000/playground).
+
   contact:
     email: noemail@exemple.com
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.11
+  
 servers:
 - url: http://localhost:8080
 tags:

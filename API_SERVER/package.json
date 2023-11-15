@@ -13,7 +13,10 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
+    "@graphql-tools/schema": "^10.0.0",
     "connect": "^3.2.0",
+    "graphql-http": "^1.22.0",
+    "graphql-playground-middleware-express": "^1.7.23",
     "js-yaml": "^3.3.0",
     "mongoose": "^7.6.3",
     "oas3-tools": "^2.2.3"

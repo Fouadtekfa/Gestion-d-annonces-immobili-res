@@ -5,3 +5,5 @@ data
 package-lock.json
 public/images/uploads
 API_SERVER/api/openapi_exemple.yaml
+API_SERVER/controllers/Pet.js
+API_SERVER/service/PetService.js

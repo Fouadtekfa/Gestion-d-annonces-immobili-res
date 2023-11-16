@@ -6,7 +6,7 @@ const port = 3000;
 const { ObjectId } = require('mongodb');
 var axios = require('axios');
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: `http://localhost:${process.env.PORT_API}`,
   withCredentials: true,
 });
 
@@ -117,61 +117,36 @@ router.get('/announce/:id/commentaire', async (req, res) => {
     let announce = await api.get(`/announce/${announceId}`);
     announce = announce.data;
 
-    if ( !announce ) {
-      return res.status(404).json({ message: 'Annonce non trouvée' });
-    }
-
     res.render('commentaire', {
         announce: announce,
         id: req.params.id,
         user: req.session.user
     });
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erreur lors de la récupération des commentaires' });
+  } catch ( r ) {
+    res.status(r.response.status).json({ message: r.response.data.error });
   }
 });
 
 
 router.post('/announce/:id/commentaire/ajouter', async (req, res) => {
-  try {
-    const announceId = req.params.id;
-    const { user_id, commentaire } = req.body;
-    
-    // Vérifiez si l'utilisateur est connecté en contentvérifiant la session
-    if (!req.session.userId) {
-      return res.status(401).json({ message: 'Vous devez être connecté pour ajouter un commentaire' });
-    }
-
-    const announce = await Announce.findById(announceId);
-
-    if (!announce) {
-      return res.status(404).json({ message: 'Annonce non trouvée' });
-    }
-
-    const newComment = {
-      user_id: req.session.userId, // Utilisez l'ID de l'utilisateur connecté
-      history: [ {
-        id_user: req.session.userId,
-        content: commentaire,
-        date: new Date(),
-        read: false
-      } ]
-    };
-    /*let comments = [ ...announce.comments ]
-    comments.push( newComment );*/
-    announce.comments.push(newComment)
-    
-    const filter = { _id:  announce._id };
-    // créer une nouvelle annonce
-    let doc = await Announce.findOneAndReplace( filter, announce );
-
-    res.redirect(`/announce/${announceId}/commentaire`);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erreur lors de l\'ajout du commentaire' });
+  if (!req.session.userId) {
+    return res.status(401).json({ message: 'Vous devez être connecté pour ajouter un commentaire' });
   }
+
+  const announceId = req.params.id;
+  const { commentaire } = req.body;
+
+  let obj = { 
+    user_id: req.session.userId,
+    commentary: commentaire
+  }
+
+  api.post(`/announce/${announceId}/commentaire/ajouter`, obj ).then( response => {
+    res.redirect(`/announce/${announceId}/commentaire`);
+  }).catch( r => {
+    res.status(r.response.status).json({ message: r.response.data.error });
+  });
 });
 
 router.post('/announce/:id/commentaire/history', async (req, res) => {

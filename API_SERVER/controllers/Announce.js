@@ -18,8 +18,14 @@ module.exports.getAnnounceById = function ( req, res, next, id ) {
   .then(function (response) {
     utils.writeJson(res, response);
   })
-  .catch(function (response) {
-    utils.writeJson(res, response);
+  .catch(function (error) {
+    console.log('error');
+    if (error.status) {
+      console.log('check status'); console.log(error);
+      res.status(error.status).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Erreur lors de la récupération des commentaires' });
+    }
   });
 }
 
@@ -50,5 +56,22 @@ module.exports.deleteAnnounce = function (req, res, next, id) {
     })
     .catch(function (response) {
       utils.writeJson(res, response);
+    });
+};
+
+module.exports.addCommentary = function (req, res, next, body, idAnnounce) {
+  console.log('add commentary controller');
+  Announce.addCommentary( body, idAnnounce )
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (error) {
+      console.log('this errorrr');
+      console.log(error);
+      if (error.status) {
+        res.status(error.status).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: 'Erreur lors de l\'ajout du commentaire' });
+      }
     });
 };

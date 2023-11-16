@@ -169,7 +169,51 @@ paths:
         "405":
           description: Invalid input
       x-swagger-router-controller: Announce
-
+  /announce/{announceId}/commentaire/ajouter:
+    post:
+      tags:
+      - announce
+      summary: Create a commentary
+      description: Create a commentary
+      operationId: addCommentary
+      parameters:
+      - name: announceId
+        in: path
+        description: The id that needs to insert a commentary
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Create a commentary
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                commentary:
+                  $ref: '#/components/schemas/Comment'
+              required:
+                - user_id
+                - commentary
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announce'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Announce'
+        "405":
+          description: Invalid input
+      x-swagger-router-controller: Announce
+  
 components:
   schemas:
     Announce:

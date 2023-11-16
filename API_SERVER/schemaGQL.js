@@ -4,6 +4,7 @@ const typeDefs = `
   type Query {
     announces: [Announce]
     announceById(id: ID!): Announce
+    commentsByAnnounceId(announceId: ID!): [Comment]
   }
 
   type Announce {
@@ -15,11 +16,15 @@ const typeDefs = `
     description: String
     price: Float
     date: String
-    photos: [String]
+    photos:[Photo]
     by: String
     comments: [Comment]
   }
 
+  type Photo {
+    filename: String
+    originalName: String
+  }
   type Comment {
     user_id: String
     history: [CommentHistory]
@@ -34,6 +39,7 @@ const typeDefs = `
 `;
 
 
+
 // resolvers
 
 const resolvers = {
@@ -44,7 +50,18 @@ const resolvers = {
         const data = await Announce.find();
         console.log("après la requête à la base de données", data);
         if (data) {
-          return data;
+          //renvoyer filename et originalName
+          const formattedData = data.map(announce => ({
+            id: announce._id,
+            ...announce.toObject(),
+            photos: announce.photos.map(photo => ({
+              filename: photo.filename,
+              originalName: photo.originalName,
+            })),
+          }));
+
+           return formattedData;
+          //return data;
         } else {
           throw new Error("aucune annonce pour l'instant");
         }
@@ -67,10 +84,40 @@ const resolvers = {
         console.error(error);
         throw new Error("erreur lors de la récupération de l'annonce par ID");
       }
-    }
+    },
+    commentsByAnnounceId: async (_, { announceId }) => {
+      try {
+        console.log("Avant la requête à la base de données pour les commentaires");
+        const announce = await Announce.findById(announceId);
+
+        console.log("Après la requête à la base de données pour les commentaires", announce);
+        
+        if (announce) {
+          //faire un map pour afficher les commentaires 
+          const comments = announce.comments.map(comment => ({
+            user_id: comment.user_id,
+            history: comment.history.map(history => ({
+              id_user: history.id_user,
+              content: history.content,
+              date: history.date.toLocaleString(),
+              read: history.read,
+            })),
+          }));
+
+          return comments;
+        } else {
+          throw new Error("Aucune annonce trouvée pour cet ID");
+        }
+      } catch (error) {
+        console.error(error);
+        throw new Error("Erreur lors de la récupération des commentaires par ID d'annonce");
+      }
+    },
+  
   },
 };
 
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 module.exports=schema;
+

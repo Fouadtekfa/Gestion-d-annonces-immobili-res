@@ -3,6 +3,7 @@ var { makeExecutableSchema } = require("@graphql-tools/schema");
 const typeDefs = `
   type Query {
     announces: [Announce]
+    announceById(id: ID!): Announce
   }
 
   type Announce {
@@ -52,8 +53,24 @@ const resolvers = {
         throw new Error("erreur lors de la récupération des annonces");
       }
     },
+    announceById: async (_, { id }) => {
+      try {
+        console.log("avant la requête à la base de données par ID");
+        const announce = await Announce.findById(id);
+        console.log("après la requête à la base de données par ID", announce);
+        if (announce) {
+          return announce;
+        } else {
+          throw new Error("aucune annonce trouvée pour cet ID");
+        }
+      } catch (error) {
+        console.error(error);
+        throw new Error("erreur lors de la récupération de l'annonce par ID");
+      }
+    }
   },
 };
+
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 module.exports=schema;

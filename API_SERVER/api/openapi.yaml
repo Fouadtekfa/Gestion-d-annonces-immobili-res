@@ -4,7 +4,7 @@ info:
   description: |-
     Announces TP
 
-    Pour accéder à GraphQL Playground, veuillez cliquer [ici](http://localhost:4000/playground).
+    Pour accéder à GraphQL Playground, veuillez cliquer [ici](http://localhost:4500/playground).
 
   contact:
     email: noemail@exemple.com

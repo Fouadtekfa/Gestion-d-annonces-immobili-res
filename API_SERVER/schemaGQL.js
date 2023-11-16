@@ -36,6 +36,40 @@ const typeDefs = `
     date: String
     read: Boolean
   }
+  type Mutation {
+    createAnnounce(input: AnnounceInput!): Announce
+  }
+
+  input AnnounceInput {
+    name: String!
+    type: String!
+    published: Boolean!
+    status: String
+    description: String
+    price: Float
+    date: String
+    photos: [PhotoInput]
+    by: String
+    comments: [CommentInput]
+  }
+  input PhotoInput {
+    filename: String
+    originalName: String
+  }
+
+  input CommentInput {
+    user_id: String
+    history: [CommentHistoryInput]
+  }
+
+  input CommentHistoryInput {
+    id_user: String
+    content: String
+    date: String
+    read: Boolean
+  }
+
+  
 `;
 
 
@@ -115,7 +149,24 @@ const resolvers = {
     },
   
   },
+
+
+  Mutation: {
+    createAnnounce: async (_, { input }) => {
+      try {
+        console.log("Avant la création de l'annonce dans la base de données");
+        const newAnnounce = await Announce.create(input);
+        console.log("Après la création de l'annonce dans la base de données", newAnnounce);
+        return newAnnounce;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Erreur lors de la création de l'annonce");
+      }
+    },
+  },
+
 };
+
 
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });

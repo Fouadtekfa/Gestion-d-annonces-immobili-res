@@ -108,3 +108,25 @@ exports.addCommentary = function(body, id) {
     })
   });
 }
+
+exports.addCommentaryHistory = function(body, id) {
+  return new Promise(function(resolve, reject) {
+    Announce.findById(id).then( announce => {
+      if(!announce) {
+        const error = new Error('Announce not found');
+        error.status = 404;
+        reject(error);
+      }
+
+      announce.comments = body
+      const filter = { _id:  announce._id };
+      Announce.findOneAndReplace( filter, announce ).then( r => {
+        resolve();
+      }).catch( err => {
+        reject(err);
+      });
+    } ).catch( err => {
+      reject( err );
+    })
+  });
+}

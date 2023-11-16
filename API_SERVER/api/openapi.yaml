@@ -213,6 +213,44 @@ paths:
         "405":
           description: Invalid input
       x-swagger-router-controller: Announce
+  /announce/{announceId}/commentaire/history:
+    post:
+      tags:
+      - announce
+      summary: Add history in commentary
+      description: Add history in commentary
+      operationId: addCommentaryHistory
+      parameters:
+      - name: announceId
+        in: path
+        description: The id that needs to insert a new history
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Add commentary history
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Comment'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announce'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Announce'
+        "405":
+          description: Invalid input
+      x-swagger-router-controller: Announce
   
 components:
   schemas:

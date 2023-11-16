@@ -1,12 +1,16 @@
 var http = require('http');
-var serverPortSwagger = 4900;
-var serverPortGraphQl = 4500;
+
 var express = require('express');
 var { createHandler } = require('graphql-http/lib/use/express');
 const expressPlayground = require('graphql-playground-middleware-express').default
 require("dotenv").config();
+
+const serverPortSwagger = process.env.serverPortSwagger;
+const serverPortGraphQl = process.env.serverPortGraphQl;
+
 var mongoose = require ('mongoose');
 (async () => {
+  console.log(process.env.serverPortSwagger)
   try {
     // Connexion à la base de données MongoDB
     await mongoose.connect(process.env.MDB, {
@@ -23,7 +27,6 @@ var mongoose = require ('mongoose');
     throw new Error('Impossible de se connecter à la base de données MongoDB');
   }
 })();
-
 
 var { makeExecutableSchema } = require("@graphql-tools/schema");
 const schema = require('./schemaGQL')
@@ -46,11 +49,11 @@ graphql.use('/graphql', createHandler({ schema }));
 graphql.get('/playground', expressPlayground({ endpoint: '/graphql' }))
 graphql.listen({ port: serverPortGraphQl });
 
-console.log('Listening to port 4000. Open http://localhost:4500/playground to run queries.');
+console.log(` =========== GRAPHQL ========= \n Listening on port ${serverPortGraphQl}. Open http://localhost:${serverPortGraphQl}/playground to run queries.`);
 
 http.createServer(swagger).listen(serverPortSwagger, function () {
-  console.log('Your server is listening on port %d (http://localhost:%d)', serverPortSwagger, serverPortSwagger);
-  console.log('Swagger-ui is available on http://localhost:%d/docs', serverPortSwagger);
+  console.log('\n\n=========== SWAGGER =========== \n Listening on port %s (http://localhost:%s)', serverPortSwagger, serverPortSwagger);
+  console.log('Swagger-ui is available on http://localhost:%s/docs', serverPortSwagger);
 });
 
 module.exports = graphql;

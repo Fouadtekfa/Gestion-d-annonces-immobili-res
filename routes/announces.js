@@ -150,32 +150,15 @@ router.post('/announce/:id/commentaire/ajouter', async (req, res) => {
 });
 
 router.post('/announce/:id/commentaire/history', async (req, res) => {
-  try {
-    
-    const announceId = req.params.id;
-    
-    // Vérifiez si l'utilisateur est connecté en contentvérifiant la session
-    if (!req.session.userId) {
-      return res.status(401).json({ message: 'Vous devez être connecté pour ajouter un commentaire' });
-    }
-    
-    const announce = await Announce.findById(announceId);
-
-    if (!announce) {
-      return res.status(404).json({ message: 'Annonce non trouvée' });
-    }
-
-    announce.comments = req.body
-    
-    const filter = { _id:  announce._id };
-    // créer une nouvelle annonce
-    let doc = await Announce.findOneAndReplace( filter, announce );
-
-    res.redirect(`/announce/${announceId}/commentaire`);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erreur lors de l\'ajout du commentaire' });
+  if (!req.session.userId) {
+    return res.status(401).json({ message: 'Vous devez être connecté pour ajouter un commentaire' });
   }
+  const announceId = req.params.id;
+  api.post(`/announce/${announceId}/commentaire/history`, req.body ).then( response => {
+    res.redirect(`/announce/${announceId}/commentaire`);
+  }).catch( r => {
+    res.status(r.response.status).json({ message: r.response.data.error });
+  });
 });
 
 module.exports = router;

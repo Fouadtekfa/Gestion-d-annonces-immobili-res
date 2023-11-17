@@ -5,6 +5,11 @@ const bcrypt = require('bcrypt');
 const User = require('../model/users');
 const hostname = 'localhost';
 const port = 3000;
+var axios = require('axios');
+const api = axios.create({
+  baseURL: `http://localhost:${process.env.PORT_API}`,
+  withCredentials: true,
+});
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -82,33 +87,17 @@ router.get('/createuser', function(req, res, next) {
 });
 
 router.post('/createuser', async (req, res) => {
-  try {
-      // Récupérer les données du formulaire
-      const {name, first_name, email, password,ConfirmPassword} = req.body;
+  const {name, first_name, email, password,ConfirmPassword} = req.body;
 
-      // Vérifier si l'utilisateur existe déjà
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-          return res.status(400).json({ message: 'une adresse mail identique avait déjà été enregistrée.' });
-      }
-      if (password !== ConfirmPassword) {
-        return res.status(400).json({ message: 'les mots de passe ne sont pas identiques' });
-    }
-
-      // Hacher le mot de passe algorithme de hachage sera exécuté 10 fois 
-      const hashedPassword = await bcrypt.hash(password, 10);
-      
-      // Créer un nouvel utilisateur
-      const newUser = new User({  name, first_name, email, password: hashedPassword , isAdmin:false});
-
-      // Enregistrer l'utilisateur dans la base de données
-      await newUser.save();
-
-      res.redirect('/users/login');
-
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'une erreur s\'est produite lors de l\'inscription'});
+  let obj = {
+    user: new User({  name, first_name, email, password, isAdmin:false}),
+    ConfirmPassword: ConfirmPassword
   }
+
+  api.post(`/createuser`, obj ).then( response => {
+    res.redirect('/users/login');
+  }).catch( r => {
+    res.status(r.response.status).json({ message: r.response.data.error });
+  });
 });
 module.exports = router;

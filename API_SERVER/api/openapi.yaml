@@ -251,7 +251,41 @@ paths:
         "405":
           description: Invalid input
       x-swagger-router-controller: Announce
-  
+  /createuser:
+    post:
+      tags:
+      - user
+      summary: Create an user
+      description: Create an user
+      operationId: addUser
+      requestBody:
+        description: Create an user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  $ref: '#/components/schemas/User'
+                ConfirmPassword:
+                  type: string
+              required:
+                - user
+                - ConfirmPassword
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        "405":
+          description: Invalid input
+      x-swagger-router-controller: User  
 components:
   schemas:
     Announce:
@@ -319,6 +353,18 @@ components:
           type: string
         originalName:
           type: string
+    User:
+      properties:
+        name:
+          type: string
+        first_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        isAdmin:
+          type: boolean
     ApiResponse:
       type: object
       properties:

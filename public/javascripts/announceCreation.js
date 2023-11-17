@@ -358,6 +358,8 @@ function fillAnnounceData( announce ) {
     $('#description-announce').val(announce.description);
     $('#price-anounce').val(announce.price);
     var announceDate = moment(announce.date);
+    console.log(announceDate);
+    console.log(announce.date);
     $('#date-announce').val(announceDate.format('YYYY-MM-DD')); // Utilisez le format correct ici
 
     // Charger les photos

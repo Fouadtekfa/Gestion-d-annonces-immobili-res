@@ -92,13 +92,42 @@ router.post('/modify', async (req, res) => {
     photos: req.body.photos ? req.body.photos : [],
     by: req.session.userId 
   };
-
-  api.put(`/announce/modify?_id=${req.body._id}`, obj ).then( response => {
-    res.redirect('/');
-  }).catch( err => {
-     console.error(err);
-     res.status(500).json({ message: 'une erreur s\'est produite lors de la création de l\'annonce' });
-  });
+  const announceId = req.body._id;
+  if( process.env.APP_USE == '/graphql') { // graphql
+    let body = JSON.stringify({
+      query: `#graphql
+          mutation ($input: AnnounceModifyInput!) {
+            modifyAnnounce(input: $input) {
+                  _id
+              }
+          }
+        `,
+        variables: {
+            input: {
+              _id: announceId,
+              announce: obj
+            }
+        }
+      }); 
+      api.post('/',  body, {
+        headers: {
+          'Content-Type': 'application/json',
+       }
+      }).then( r => {
+        let annonce = r.data
+        annonce = annonce.data.modifyAnnounce
+        res.redirect('/');
+      } ).catch( err => {
+        console.log( err );
+       });
+  } else { // Swagger
+    api.put(`/announce/modify?_id=${req.body._id}`, obj ).then( response => {
+      res.redirect('/');
+    }).catch( err => {
+       console.error(err);
+       res.status(500).json({ message: 'une erreur s\'est produite lors de la création de l\'annonce' });
+    });
+  }
 });
 
 router.get('/all', function(req, res, next) {
@@ -237,7 +266,7 @@ router.delete('/announce/:id', function(req, res, next) {
 
 router.get('/announce/:id/commentaire', async (req, res) => {
   const announceId = req.params.id;
-  if( process.env.APP_USE == '/graphql') { // Swagger
+  if( process.env.APP_USE == '/graphql') { // Graphsql
     let body = JSON.stringify({
       query: `#graphql
           query {
@@ -301,10 +330,6 @@ router.get('/announce/:id/commentaire', async (req, res) => {
 
 
 router.post('/announce/:id/commentaire/ajouter', async (req, res) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ message: 'Vous devez être connecté pour ajouter un commentaire' });
-  }
-
   const announceId = req.params.id;
   const { commentaire } = req.body;
 
@@ -313,11 +338,44 @@ router.post('/announce/:id/commentaire/ajouter', async (req, res) => {
     commentary: commentaire
   }
 
-  api.post(`/announce/${announceId}/commentaire/ajouter`, obj ).then( response => {
-    res.redirect(`/announce/${announceId}/commentaire`);
-  }).catch( r => {
-    res.status(r.response.status).json({ message: r.response.data.error });
-  });
+  if (!req.session.userId) {
+    return res.status(401).json({ message: 'Vous devez être connecté pour ajouter un commentaire' });
+  }
+
+  if( process.env.APP_USE == '/graphql') { 
+    let body = JSON.stringify({
+      query: `#graphql
+          mutation ($input: AddCommentInput!) {
+            createCommentary(input: $input) {
+                  _id
+              }
+          }
+        `,
+        variables: {
+            input: {
+              comment : obj,
+              announce_id : announceId
+            }
+        }
+      }); 
+      api.post('/',  body, {
+        headers: {
+          'Content-Type': 'application/json',
+       }
+      }).then( r => {
+        let annonce = r.data
+        annonce = annonce.data.createCommentary
+        res.redirect(`/announce/${announceId}/commentaire`);
+      } ).catch( err => {
+        console.log( err );
+       });
+  } else { // Swagger
+    api.post(`/announce/${announceId}/commentaire/ajouter`, obj ).then( response => {
+      res.redirect(`/announce/${announceId}/commentaire`);
+    }).catch( r => {
+      res.status(r.response.status).json({ message: r.response.data.error });
+    });
+  }
 });
 
 router.post('/announce/:id/commentaire/history', async (req, res) => {

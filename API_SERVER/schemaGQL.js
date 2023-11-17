@@ -38,8 +38,20 @@ const typeDefs = `#graphql
     date: String
     read: Boolean
   }
+
+  type User {
+    _id: ID!
+    name: String
+    first_name: String
+    email: String
+    password: String
+    isAdmin: Boolean
+  }
+
   type Mutation {
     createAnnounce(input: AnnounceInput!): Announce
+    createCommentary(input: AddCommentInput!): Announce
+    modifyAnnounce(input: AnnounceModifyInput!): Announce
     deleteAnnounce(id: ID): Announce
   }
 
@@ -55,45 +67,35 @@ const typeDefs = `#graphql
     by: String
     comments: [CommentInput]
   }
+
+  input AnnounceModifyInput {
+    _id: ID!
+    announce: AnnounceInput
+  }
+
   input PhotoInput {
     filename: String
     originalName: String
   }
 
+  input AddCommentInput {
+    comment: CommentInput
+    announce_id: ID
+  }
+
   input CommentInput {
     user_id: String
-    history: [CommentHistoryInput]
-  }
-
-  input CommentHistoryInput {
-    id_user: String
-    content: String
-    date: String
-    read: Boolean
-  }
-
-  type User {
-    _id: ID!
-    name: String
-    first_name: String
-    email: String
-    password: String
-    isAdmin: Boolean
+    commentary: String
   }
   
 `;
-
-
-
 // resolvers
 
 const resolvers = {
   Query: {
     announces: async () => {
       try {
-        console.log("avant la requête à la base de données");
         const data = await Announce.find();
-        console.log("après la requête à la base de données", data);
         if (data) {
           //renvoyer filename et originalName
           const formattedData = data.map(announce => ({
@@ -103,11 +105,13 @@ const resolvers = {
               filename: photo.filename,
               originalName: photo.originalName,
             })),
-            date: announce.date.toString()
+            date: announce.date.toString(),
+            comments : announce.comments.map(comment => {
+                comment.history = comment.history.map( h => { h.date = h.date.toString(); return h; } );
+                return comment;
+            } )
           }));
-          console.log('checking ofrmated ddataaaaa');
-          console.log(formattedData);
-           return formattedData;
+          return formattedData;
           //return data;
         } else {
           throw new Error("aucune annonce pour l'instant");
@@ -119,9 +123,10 @@ const resolvers = {
     },
     announceById: async (_, { id }) => {
       try {
-        console.log("avant la requête à la base de données par ID " + id);
-        const announce = await Announce.findById(id);
-        console.log("après la requête à la base de données par ID", announce);
+        var announce = await Announce.findById(id);
+        announce = JSON.stringify(announce);
+        announce = JSON.parse(announce);
+
         if (announce) {
           return announce;
         } else {
@@ -147,23 +152,15 @@ const resolvers = {
     },
     commentsByAnnounceId: async (_, { announceId }) => {
       try {
-        console.log("Avant la requête à la base de données pour les commentaires");
-        const announce = await Announce.findById(announceId);
+        var announce = await Announce.findById(announceId);
+        announce = JSON.stringify(announce);
+        announce = JSON.parse(announce);
 
-        console.log("Après la requête à la base de données pour les commentaires", announce);
-        
         if (announce) {
           //faire un map pour afficher les commentaires 
           const comments = announce.comments.map(comment => ({
             user_id: comment.user_id,
-            history: comment.history.map(history => ({
-              id_user: history.id_user,
-              content: history.content,
-              date: history.date.toLocaleString(),
-              read: history.read,
-            })),
-          }));
-
+          }));          
           return comments;
         } else {
           throw new Error("Aucune annonce trouvée pour cet ID");
@@ -180,13 +177,53 @@ const resolvers = {
   Mutation: {
     createAnnounce: async (_, { input }) => {
       try {
-        console.log("Avant la création de l'annonce dans la base de données");
         const newAnnounce = await Announce.create(input);
-        console.log("Après la création de l'annonce dans la base de données", newAnnounce);
         return newAnnounce;
       } catch (error) {
         console.error(error);
         throw new Error("Erreur lors de la création de l'annonce");
+      }
+    },
+    modifyAnnounce: async (_, { input }) => {
+      try {
+        const filter = { _id: input._id };
+        const updatedAnnounce = await Announce.findOneAndUpdate(filter, input.announce);
+        return updatedAnnounce;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Erreur lors de la modification de l'annonce");
+      }
+    },
+    createCommentary: async (_, { input }) => {
+      try {
+        const announce = await Announce.findById(input.announce_id);
+        if(!announce) {
+          throw new Error("aucune annonce trouvée pour cet ID");
+        }
+
+        const newComment = {
+          user_id: input.comment.user_id,
+          history: [ {
+            id_user: input.comment.user_id,
+            content: input.comment.commentary,
+            date: new Date(),
+            read: false
+          } ]
+        };
+        
+        let objFormat = {
+          ...announce.toObject(),
+          date: announce.date.toString()
+        }
+
+        objFormat.comments.push(newComment)
+
+        const filter = { _id: input.announce_id };
+        const updatedAnnounce = Announce.findOneAndReplace( filter, objFormat );
+        return updatedAnnounce;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Erreur lors de la modification de l'annonce");
       }
     },
     deleteAnnounce: async (_, { id }) => {

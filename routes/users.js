@@ -7,7 +7,7 @@ const hostname = 'localhost';
 const port = 3000;
 var axios = require('axios');
 const api = axios.create({
-  baseURL: `http://localhost:${process.env.PORT_API}`,
+  baseURL: `http://localhost:${process.env.PORT_API}${process.env.APP_USE}`,
   withCredentials: true,
 });
 
@@ -30,14 +30,41 @@ router.get('/login', function(req, res, next) {
 });
 
 router.get('/user/:id', function(req, res, next) {
-  User.findOne({
-    _id: req.params.id
-  }).then( function( usr ) {
-    res.json( usr );
-  }).catch( function( err ) {
-    console.log('error');
-    console.log( err );
-  } );
+  const userId = req.params.id;
+  if( process.env.APP_USE == '/graphql') { // graphql
+    let body = JSON.stringify({
+      query: `#graphql
+          query {
+            userById(id: "${userId}") {
+                _id
+                name
+                first_name
+                email
+                isAdmin
+            }
+        }`
+      }); 
+      api.post('/',  body, {
+        headers: {
+          'Content-Type': 'application/json',
+       }
+      }).then( r => {
+        let usr = r.data
+        usr = usr.data.userById
+        res.json(usr);
+      } ).catch( err => {
+        console.log( err );
+       });
+  } else {
+    User.findOne({
+      _id: req.params.id
+    }).then( function( usr ) {
+      res.json( usr );
+    }).catch( function( err ) {
+      console.log('error');
+      console.log( err );
+    } );
+  }
 });
 
 router.post('/login', async (req, res) => {

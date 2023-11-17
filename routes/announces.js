@@ -68,11 +68,12 @@ router.post('/modify', async (req, res) => {
 });
 
 router.get('/all', function(req, res, next) {
-  if( process.env.APP_USE == '/graphql') { // Swagger
+  if( process.env.APP_USE == '/graphql') { // graphql
     let body = JSON.stringify({
       query: `#graphql
           query {
             announces {
+              _id
               name
               type
               published
@@ -103,7 +104,9 @@ router.get('/all', function(req, res, next) {
      }
     }).then( r => {
       let annonces = r.data
-      res.json(annonces.data.announces);
+      console.log(annonces);
+      annonces = annonces.data.announces
+      res.json(annonces);
     } ).catch( err => {
       console.log( err );
      });
@@ -117,11 +120,55 @@ router.get('/all', function(req, res, next) {
 });
 
 router.get('/announce/:id', function(req, res, next) {
-  api.get(`/announce/${req.params.id}`).then( response => {
-    res.json(response.data);
-   }).catch( err => {
-    console.log( err );
-   });
+  const announceId = req.params.id;
+  if( process.env.APP_USE == '/graphql') { // Swagger
+    let body = JSON.stringify({
+      query: `#graphql
+          query {
+            announceById(id: "${announceId}") {
+              _id
+              name
+              type
+              published
+              status
+              description
+              price
+              date
+              photos {
+                filename
+                originalName
+              }
+              by
+              comments {
+                user_id
+                history {
+                  id_user
+                  content
+                  date
+                  read
+                }
+              }
+            }
+        }`
+      }); 
+      api.post('/',  body, {
+        headers: {
+          'Content-Type': 'application/json',
+       }
+      }).then( r => {
+        let annonce = r.data
+        annonce = annonce.data.announceById
+        res.json(annonce);
+      } ).catch( err => {
+        console.log( err );
+       });
+  } else { // Swagger
+    api.get(`/announce/${req.params.id}`).then( response => {
+      res.json(response.data);
+     }).catch( err => {
+      console.log( err );
+     });
+  }
 });
 
 router.delete('/announce/:id', function(req, res, next) {
@@ -132,40 +179,67 @@ router.delete('/announce/:id', function(req, res, next) {
    });
 });
 
-router.get('/commentaire', (req, res) => {
-  // Simuler des données de commentaires pour le test ==> ca marche 
-  const comments = [
-    { history: [{ content: 'Commentaire 1', date: new Date() }] },
-    { history: [{ content: 'Commentaire 2', date: new Date() }] },
-    { history: [{ content: 'Commentaire 2', date: new Date() }] },
-    { history: [{ content: 'Commentaire 2', date: new Date() }] },
-    { history: [{ content: 'Commentaire 2', date: new Date() }] },
-    { history: [{ content: 'Commentaire 2', date: new Date() }] },
-    { history: [{ content: 'Commentaire 2', date: new Date() }] },
-    { history: [{ content: 'Commentaire 2', date: new Date() }] },
-    { history: [{ content: 'Commentaire 2', date: new Date() }] },
-    { history: [{ content: 'Commentaire 2', date: new Date() }] },
-    { history: [{ content: 'Commentaire 2', date: new Date() }] },
-  ];
-
-   
-  res.render('commentaire', { comments });
-});
-
 router.get('/announce/:id/commentaire', async (req, res) => {
-  try {
-    const announceId = req.params.id;
-    let announce = await api.get(`/announce/${announceId}`);
-    announce = announce.data;
-
-    res.render('commentaire', {
-        announce: announce,
-        id: req.params.id,
-        user: req.session.user
-    });
-
-  } catch ( r ) {
-    res.status(r.response.status).json({ message: r.response.data.error });
+  const announceId = req.params.id;
+  if( process.env.APP_USE == '/graphql') { // Swagger
+    let body = JSON.stringify({
+      query: `#graphql
+          query {
+            announceById(id: "${announceId}") {
+              _id
+              name
+              type
+              published
+              status
+              description
+              price
+              date
+              photos {
+                filename
+                originalName
+              }
+              by
+              comments {
+                user_id
+                history {
+                  id_user
+                  content
+                  date
+                  read
+                }
+              }
+            }
+        }`
+      }); 
+      api.post('/',  body, {
+        headers: {
+          'Content-Type': 'application/json',
+       }
+      }).then( r => {
+        let annonce = r.data
+        annonce = annonce.data.announceById
+        res.render('commentaire', {
+          announce: annonce,
+          id: req.params.id,
+          user: req.session.user
+      });
+      } ).catch( err => {
+        console.log( err );
+       });
+  } else { // Swagger
+    try {
+      let announce = await api.get(`/announce/${announceId}`);
+      announce = announce.data;
+  
+      res.render('commentaire', {
+          announce: announce,
+          id: req.params.id,
+          user: req.session.user
+      });
+  
+    } catch ( r ) {
+      res.status(r.response.status).json({ message: r.response.data.error });
+    }
   }
 });
 

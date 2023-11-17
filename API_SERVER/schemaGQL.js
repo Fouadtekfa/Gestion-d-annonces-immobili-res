@@ -1,14 +1,16 @@
 const Announce = require('./model/announce');
+const User = require('./model/user');
 var { makeExecutableSchema } = require("@graphql-tools/schema");
 const typeDefs = `#graphql
   type Query {
     announces: [Announce]
     announceById(id: ID!): Announce
+    userById(id: ID!): User
     commentsByAnnounceId(announceId: ID!): [Comment]
   }
 
   type Announce {
-    id: ID!
+    _id: ID!
     name: String!
     type: String!
     published: Boolean!
@@ -69,6 +71,14 @@ const typeDefs = `#graphql
     read: Boolean
   }
 
+  type User {
+    _id: ID!
+    name: String
+    first_name: String
+    email: String
+    password: String
+    isAdmin: Boolean
+  }
   
 `;
 
@@ -86,14 +96,15 @@ const resolvers = {
         if (data) {
           //renvoyer filename et originalName
           const formattedData = data.map(announce => ({
-            id: announce._id,
+            _id: announce._id,
             ...announce.toObject(),
             photos: announce.photos.map(photo => ({
               filename: photo.filename,
               originalName: photo.originalName,
             })),
           }));
-
+          console.log('checking ofrmated ddataaaaa');
+          console.log(formattedData);
            return formattedData;
           //return data;
         } else {
@@ -106,7 +117,7 @@ const resolvers = {
     },
     announceById: async (_, { id }) => {
       try {
-        console.log("avant la requête à la base de données par ID");
+        console.log("avant la requête à la base de données par ID " + id);
         const announce = await Announce.findById(id);
         console.log("après la requête à la base de données par ID", announce);
         if (announce) {
@@ -117,6 +128,19 @@ const resolvers = {
       } catch (error) {
         console.error(error);
         throw new Error("erreur lors de la récupération de l'annonce par ID");
+      }
+    },
+    userById: async (_, { id }) => {
+      try {
+        const user = await User.findById(id);
+        if (user) {
+          return user;
+        } else {
+          throw new Error("aucune utilisateur trouvée pour cet ID");
+        }
+      } catch (error) {
+        console.error(error);
+        throw new Error("erreur lors de la récupération de l'utilisateur par ID");
       }
     },
     commentsByAnnounceId: async (_, { announceId }) => {
@@ -163,8 +187,7 @@ const resolvers = {
         throw new Error("Erreur lors de la création de l'annonce");
       }
     },
-  },
-
+  }
 };
 
 

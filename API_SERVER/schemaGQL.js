@@ -40,6 +40,7 @@ const typeDefs = `#graphql
   }
   type Mutation {
     createAnnounce(input: AnnounceInput!): Announce
+    deleteAnnounce(id: ID): Announce
   }
 
   input AnnounceInput {
@@ -102,6 +103,7 @@ const resolvers = {
               filename: photo.filename,
               originalName: photo.originalName,
             })),
+            date: announce.date.toString()
           }));
           console.log('checking ofrmated ddataaaaa');
           console.log(formattedData);
@@ -187,6 +189,16 @@ const resolvers = {
         throw new Error("Erreur lors de la création de l'annonce");
       }
     },
+    deleteAnnounce: async (_, { id }) => {
+      try {
+        let announce = await Announce.findOneAndDelete({_id: id});
+        return announce;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Erreur lors de la suppression de l'annonce");
+      } 
+    }
+    
   }
 };
 

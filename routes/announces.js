@@ -38,12 +38,46 @@ router.post('/create', async (req, res) => {
     comments: []
   };
 
-  api.post('/announce/create', obj ).then( response => {
-     res.redirect('/');
-   }).catch( err => {
-      console.error(err);
-      res.status(500).json({ message: 'une erreur s\'est produite lors de la création de l\'annonce' });
-   });
+  if( process.env.APP_USE == '/graphql') { // graphql
+    let body = JSON.stringify({
+      query: `#graphql
+          mutation ($input: AnnounceInput!) {
+              createAnnounce(input: $input) {
+                  _id
+                  name
+                  type
+                  published
+                  status
+                  description
+                  price
+                  date
+                  by
+              }
+          }
+      `,
+        variables: {
+            input: obj
+        }
+      }); 
+      api.post('/',  body, {
+        headers: {
+          'Content-Type': 'application/json',
+       }
+      }).then( r => {
+        let annonce = r.data
+        annonce = annonce.data.createAnnounce
+        res.redirect('/');
+      } ).catch( err => {
+        console.log( err );
+       });
+  } else { // Swagger
+    api.post('/announce/create', obj ).then( response => {
+       res.redirect('/');
+     }).catch( err => {
+        console.error(err);
+        res.status(500).json({ message: 'une erreur s\'est produite lors de la création de l\'annonce' });
+     });
+  }
 });
 
 router.post('/modify', async (req, res) => {
@@ -104,7 +138,6 @@ router.get('/all', function(req, res, next) {
      }
     }).then( r => {
       let annonces = r.data
-      console.log(annonces);
       annonces = annonces.data.announces
       res.json(annonces);
     } ).catch( err => {
@@ -121,7 +154,7 @@ router.get('/all', function(req, res, next) {
 
 router.get('/announce/:id', function(req, res, next) {
   const announceId = req.params.id;
-  if( process.env.APP_USE == '/graphql') { // Swagger
+  if( process.env.APP_USE == '/graphql') { // graphql
     let body = JSON.stringify({
       query: `#graphql
           query {
@@ -172,11 +205,34 @@ router.get('/announce/:id', function(req, res, next) {
 });
 
 router.delete('/announce/:id', function(req, res, next) {
-  api.delete(`/announce/${req.params.id}`).then( response => {
-    res.json(response.data);
-   }).catch( err => {
-    console.log( err );
-   });
+  const announceId = req.params.id;
+  if( process.env.APP_USE == '/graphql') { // graphql
+    let body = JSON.stringify({
+      query: `#graphql
+          mutation {
+            deleteAnnounce(id: "${announceId}") {
+              _id
+            }
+        }`
+      }); 
+      api.post('/',  body, {
+        headers: {
+          'Content-Type': 'application/json',
+       }
+      }).then( r => {
+        let annonce = r.data
+        annonce = annonce.data.deleteAnnounce
+        res.json(annonce);
+      } ).catch( err => {
+        console.log( err );
+       });
+  } else {
+    api.delete(`/announce/${req.params.id}`).then( response => {
+      res.json(response.data);
+     }).catch( err => {
+      console.log( err );
+     });
+  }
 });
 
 router.get('/announce/:id/commentaire', async (req, res) => {

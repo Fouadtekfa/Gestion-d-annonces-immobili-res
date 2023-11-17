@@ -30,8 +30,7 @@ function createImageForAnnounce() {
         let images = [ { filename: 'no-image', originalName: 'no-image.jpg' } ];
         createImageInContainer( images, 0, announceHTML );
     }
-
-
+    
     let detailsContainer = $( '<div class="details-container"/>' );
         detailsContainer.append(`<span class="label-details">Disponible à partir de: </span><span>${new Date( _announce.date ).toLocaleDateString('fr-FR') }</span>` )
         detailsContainer.append(`<br><br><span class="label-details">Type d'annonce: </span><span>${_announce.type}</span>` );

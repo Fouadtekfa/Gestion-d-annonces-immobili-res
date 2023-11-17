@@ -6,7 +6,7 @@ const port = 3000;
 const { ObjectId } = require('mongodb');
 var axios = require('axios');
 const api = axios.create({
-  baseURL: `http://localhost:${process.env.PORT_API}`,
+  baseURL: `http://localhost:${process.env.PORT_API}${process.env.APP_USE}`,
   withCredentials: true,
 });
 
@@ -68,11 +68,52 @@ router.post('/modify', async (req, res) => {
 });
 
 router.get('/all', function(req, res, next) {
- api.get('/announces').then( response => {
-  res.json(response.data);
- }).catch( err => {
-  console.log( err );
- });
+  if( process.env.APP_USE == '/graphql') { // Swagger
+    let body = JSON.stringify({
+      query: `#graphql
+          query {
+            announces {
+              name
+              type
+              published
+              status
+              description
+              price
+              date
+              photos {
+                filename
+                originalName
+              }
+              by
+              comments {
+                user_id
+                history {
+                  id_user
+                  content
+                  date
+                  read
+                }
+              }
+          }
+        }`
+      });
+    api.post('/',  body, {
+      headers: {
+        'Content-Type': 'application/json',
+     }
+    }).then( r => {
+      let annonces = r.data
+      res.json(annonces.data.announces);
+    } ).catch( err => {
+      console.log( err );
+     });
+  } else { // Swagger
+    api.get('/announces').then( response => {
+     res.json(response.data);
+    }).catch( err => {
+     console.log( err );
+    });
+  }
 });
 
 router.get('/announce/:id', function(req, res, next) {

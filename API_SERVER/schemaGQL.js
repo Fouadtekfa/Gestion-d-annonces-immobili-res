@@ -1,6 +1,6 @@
 const Announce = require('./model/announce');
 var { makeExecutableSchema } = require("@graphql-tools/schema");
-const typeDefs = `
+const typeDefs = `#graphql
   type Query {
     announces: [Announce]
     announceById(id: ID!): Announce

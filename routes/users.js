@@ -68,34 +68,45 @@ router.get('/user/:id', function(req, res, next) {
 });
 
 router.post('/login', async (req, res) => {
-  try {
-      const { email, password } = req.body;
-      
-      // recherche email 
-      const user = await User.findOne({ email });
-      // repondre avec un code d'erreur 401 si l'utilisateur n'est pas trouvé ou si les informations d'identification sont incorrectes
-      if (!user) {
-          //return res.status(401).json({ message: 'email non trouvé.' });
-      return res.status(401).json({ message: 'Nom d\'utilisateur ou mot de passe incorrect' });
-      
-        }
-
-      // vérification mdp
-      const passwordMatch = await bcrypt.compare(password, user.password);
-
-      if (!passwordMatch) {
-          // return res.status(401).json({ message: 'mdp incorrect.' });
-          
-          return res.status(401).json({ message: 'Nom d\'utilisateur ou mot de passe incorrect' });
-        }
-      // maintient l'authentification de l'utilisateur en enregistrant son id dans la session 
-      req.session.userId = user._id;
-      req.session.user = user;
-      res.redirect('/'); 
-
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ message:'une erreur s\'est produite lors de l\'établissement de la connexion'});
+  const { email, password } = req.body;
+  if( process.env.APP_USE == '/graphql') {
+    try {
+        
+        // recherche email 
+        const user = await User.findOne({ email });
+        // repondre avec un code d'erreur 401 si l'utilisateur n'est pas trouvé ou si les informations d'identification sont incorrectes
+        if (!user) {
+            //return res.status(401).json({ message: 'email non trouvé.' });
+        return res.status(401).json({ message: 'Nom d\'utilisateur ou mot de passe incorrect' });
+        
+          }
+  
+        // vérification mdp
+        const passwordMatch = await bcrypt.compare(password, user.password);
+  
+        if (!passwordMatch) {
+            // return res.status(401).json({ message: 'mdp incorrect.' });
+            
+            return res.status(401).json({ message: 'Nom d\'utilisateur ou mot de passe incorrect' });
+          }
+        // maintient l'authentification de l'utilisateur en enregistrant son id dans la session 
+        req.session.userId = user._id;
+        req.session.user = user;
+        res.redirect('/'); 
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message:'une erreur s\'est produite lors de l\'établissement de la connexion'});
+      }
+    } else {
+      api.post(`/user/login/`, {email: email, password: password}).then( response => {
+        let auth = response.data;
+        req.session.userId = auth.user._id;
+        req.session.user = auth.user;
+        req.session.token = auth.token;
+        res.redirect('/'); 
+       }).catch( r => {
+        res.status(r.response.status).json({ message: r.response.data.error });
+       });
   }
 });
 

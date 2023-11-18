@@ -86,3 +86,17 @@ module.exports.addCommentaryHistory = function (req, res, next, body, idAnnounce
       }
   });
 };
+
+module.exports.addCommentaryHistory = function (req, res, next, body, idAnnounce) {
+  Announce.addCommentaryHistory( body, idAnnounce )
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (error) {
+      if (error.status) {
+        res.status(error.status).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: 'Erreur lors de l\'ajout d\'historique dans le commentaire' });
+      }
+  });
+};

@@ -1,6 +1,7 @@
 'use strict';
 const User = require('../model/user');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 exports.addUser = function(body) {
   console.log('check boddyyy'); console.log(body.user);
@@ -30,4 +31,62 @@ exports.addUser = function(body) {
         reject( err );
       }
     });
-  }
+}
+
+/**
+ * Logs user into the system
+ * 
+ *
+ * username String The user name for login
+ * password String The password for login in clear text
+ * returns String
+ **/
+exports.loginUser = function(email,password) {
+  return new Promise(async function(resolve, reject) {
+    try {
+      const user = await User.findOne({ email });
+      
+      if ( !user ) {
+        const error = new Error( 'Mot de passe ou utilisateur invalide' );
+        error.status = 401;
+        return reject(error);
+      }
+
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        const error = new Error( 'Mot de passe ou utilisateur invalide' );
+        error.status = 401;
+        return reject(error);
+      }
+
+      let resp = {};
+      let token = crypto.randomBytes(32).toString('hex');
+
+      let usr = {
+        auth: true,
+        user: user,
+        token: token
+      }
+
+      resp['application/json'] = usr;
+      console.log('senddd');
+      let send = resp[Object.keys(resp)[0]] 
+      console.log(send);
+      resolve( send );
+    } catch (err){
+      reject( err );
+    }
+
+    /*var examples = {};
+    examples['application/json'] = {
+      "bytes": [],
+      "empty": true
+    };*/
+
+    /*if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }*/
+  });
+}

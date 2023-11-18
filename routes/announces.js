@@ -383,11 +383,41 @@ router.post('/announce/:id/commentaire/history', async (req, res) => {
     return res.status(401).json({ message: 'Vous devez être connecté pour ajouter un commentaire' });
   }
   const announceId = req.params.id;
-  api.post(`/announce/${announceId}/commentaire/history`, req.body ).then( response => {
-    res.redirect(`/announce/${announceId}/commentaire`);
-  }).catch( r => {
-    res.status(r.response.status).json({ message: r.response.data.error });
-  });
+  if( process.env.APP_USE == '/graphql') { 
+    let body = JSON.stringify({
+      query: `#graphql
+          mutation ($input: AddCommentHistoryInput!) {
+            addCommentaryHistory(input: $input) {
+                  _id
+              }
+          }
+        `,
+        variables: {
+            input: {
+              comments : req.body,
+              announce_id : announceId
+            }
+        }
+      }); 
+      api.post('/',  body, {
+        headers: {
+          'Content-Type': 'application/json',
+       }
+      }).then( r => {
+        let annonce = r.data
+        console.log(annonce);
+        annonce = annonce.data.addCommentaryHistory
+        res.redirect(`/announce/${announceId}/commentaire`);
+      } ).catch( err => {
+        console.log( err );
+       });
+  } else { // Swagger
+    api.post(`/announce/${announceId}/commentaire/history`, req.body ).then( response => {
+      res.redirect(`/announce/${announceId}/commentaire`);
+    }).catch( r => {
+      res.status(r.response.status).json({ message: r.response.data.error });
+    });
+  }
 });
 
 module.exports = router;

@@ -51,6 +51,7 @@ const typeDefs = `#graphql
   type Mutation {
     createAnnounce(input: AnnounceInput!): Announce
     createCommentary(input: AddCommentInput!): Announce
+    addCommentaryHistory(input: AddCommentHistoryInput!): Announce
     modifyAnnounce(input: AnnounceModifyInput!): Announce
     deleteAnnounce(id: ID): Announce
   }
@@ -86,6 +87,23 @@ const typeDefs = `#graphql
   input CommentInput {
     user_id: String
     commentary: String
+  }
+
+  input historyInput {
+    id_user: String
+    content: String
+    date: String
+    read: Boolean
+  }
+
+  input AddCommentHistoryInput {
+    comments: [ CommentsInput ],
+    announce_id: ID
+  }
+
+  input CommentsInput {
+    user_id: String
+    history: [historyInput]
   }
   
 `;
@@ -190,16 +208,17 @@ const resolvers = {
         const updatedAnnounce = await Announce.findOneAndUpdate(filter, input.announce);
         return updatedAnnounce;
       } catch (error) {
-        console.error(error);
         throw new Error("Erreur lors de la modification de l'annonce");
       }
     },
     createCommentary: async (_, { input }) => {
       try {
-        const announce = await Announce.findById(input.announce_id);
+        var announce = await Announce.findById(input.announce_id);
         if(!announce) {
           throw new Error("aucune annonce trouvée pour cet ID");
         }
+        announce = JSON.stringify(announce);
+        announce = JSON.parse(announce);
 
         const newComment = {
           user_id: input.comment.user_id,
@@ -210,21 +229,31 @@ const resolvers = {
             read: false
           } ]
         };
-        
-        let objFormat = {
-          ...announce.toObject(),
-          date: announce.date.toString()
-        }
 
-        objFormat.comments.push(newComment)
+        announce.comments.push(newComment)
 
         const filter = { _id: input.announce_id };
-        const updatedAnnounce = Announce.findOneAndReplace( filter, objFormat );
+        const updatedAnnounce = Announce.findOneAndReplace( filter, announce );
         return updatedAnnounce;
       } catch (error) {
         console.error(error);
-        throw new Error("Erreur lors de la modification de l'annonce");
+        throw new Error("Erreur lors de la creationd de commentaire dans l'annonce");
       }
+    },
+    addCommentaryHistory: async (_, { input }) => {
+      try {
+        var announce = await Announce.findById(input.announce_id);
+        if(!announce) {
+          throw new Error("aucune annonce trouvée pour cet ID");
+        }
+        announce.comments = input.comments
+        const filter = { _id:  announce._id };
+        const newAnnounce = Announce.findOneAndReplace( filter, announce );
+        return newAnnounce;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Erreur lors de l'ajout de reponse dans l'annonce");
+      } 
     },
     deleteAnnounce: async (_, { id }) => {
       try {

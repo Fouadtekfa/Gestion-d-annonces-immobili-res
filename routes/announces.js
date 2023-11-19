@@ -5,6 +5,7 @@ const hostname = 'localhost';
 const port = 3000;
 const { ObjectId } = require('mongodb');
 var axios = require('axios');
+const { requiresAuth } = require('express-openid-connect');
 require("dotenv").config();
 const api = axios.create({
   baseURL: `http://localhost:${process.env.PORT_API}${process.env.APP_USE}`,
@@ -12,6 +13,9 @@ const api = axios.create({
 });
 
 /* GET home page. */
+// use requiresAuth() as middleware, but attention with login
+// if the user es not authentifier the login page is not calling our localhost/login
+// but the service directly, so the session after is not generated correctly
 router.get('/create', function(req, res, next) {
   if( !req.session.user ) {
     res.redirect('/');
@@ -21,7 +25,8 @@ router.get('/create', function(req, res, next) {
 
   res.render('announce', { 
     title: 'Creer un annonce',
-    default_directory: 'http://' + hostname + ':' + port
+    default_directory: 'http://' + hostname + ':' + port,
+    user: req.session.user
    });
 });
 
@@ -40,6 +45,7 @@ router.post('/create', async (req, res) => {
   };
 
   if( process.env.APP_USE == '/graphql') { // graphql
+    const { token_type, access_token } = req.oidc.accessToken ? req.oidc.accessToken : { token_type: '', access_token: ''};
     let body = JSON.stringify({
       query: `#graphql
           mutation ($input: AnnounceInput!) {
@@ -63,7 +69,7 @@ router.post('/create', async (req, res) => {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + process.env.TOKEN_API
+          Authorization: `${token_type} ${access_token}`,
        }
       }).then( r => {
         if( r.data.errors ) {
@@ -102,6 +108,7 @@ router.post('/modify', async (req, res) => {
   };
   const announceId = req.body._id;
   if( process.env.APP_USE == '/graphql') { // graphql
+    const { token_type, access_token } = req.oidc.accessToken ? req.oidc.accessToken : { token_type: '', access_token: ''};
     let body = JSON.stringify({
       query: `#graphql
           mutation ($input: AnnounceModifyInput!) {
@@ -120,7 +127,7 @@ router.post('/modify', async (req, res) => {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + process.env.TOKEN_API
+            Authorization: `${token_type} ${access_token}`,
        }
 
       }).then( r => {
@@ -147,6 +154,10 @@ router.post('/modify', async (req, res) => {
 
 router.get('/all', function(req, res, next) {
   if( process.env.APP_USE == '/graphql') { // graphql
+    console.log('finddddd');
+    console.log(req.oidc.accessToken);
+    const { token_type, access_token } = req.oidc.accessToken ? req.oidc.accessToken : { token_type: '', access_token: ''};
+    console.log('check');
     let body = JSON.stringify({
       query: `#graphql
           query {
@@ -179,12 +190,15 @@ router.get('/all', function(req, res, next) {
     api.post('/',  body, {
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `${token_type} ${access_token}`,
      }
-    }).then( r => {
+    }).then( r => {console.log('checking res');
+    console.log(r);
       let annonces = r.data
       annonces = annonces.data.announces
       res.json(annonces);
     } ).catch( err => {
+      console.log('errrorrrr');
       console.log( err );
      });
   } else { // Swagger
@@ -199,6 +213,7 @@ router.get('/all', function(req, res, next) {
 router.get('/announce/:id', function(req, res, next) {
   const announceId = req.params.id;
   if( process.env.APP_USE == '/graphql') { // graphql
+    const { token_type, access_token } = req.oidc.accessToken ? req.oidc.accessToken : { token_type: '', access_token: ''};
     let body = JSON.stringify({
       query: `#graphql
           query {
@@ -231,6 +246,7 @@ router.get('/announce/:id', function(req, res, next) {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `${token_type} ${access_token}`,
        }
       }).then( r => {
         let annonce = r.data
@@ -251,6 +267,7 @@ router.get('/announce/:id', function(req, res, next) {
 router.delete('/announce/:id', function(req, res, next) {
   const announceId = req.params.id;
   if( process.env.APP_USE == '/graphql') { // graphql
+    const { token_type, access_token } = req.oidc.accessToken ? req.oidc.accessToken : { token_type: '', access_token: ''};
     let body = JSON.stringify({
       query: `#graphql
           mutation {
@@ -262,7 +279,7 @@ router.delete('/announce/:id', function(req, res, next) {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + process.env.TOKEN_API
+          Authorization: `${token_type} ${access_token}`,
        }
       }).then( r => {
         let annonce = r.data
@@ -289,6 +306,7 @@ router.delete('/announce/:id', function(req, res, next) {
 router.get('/announce/:id/commentaire', async (req, res) => {
   const announceId = req.params.id;
   if( process.env.APP_USE == '/graphql') { // Graphsql
+    const { token_type, access_token } = req.oidc.accessToken ? req.oidc.accessToken : { token_type: '', access_token: ''};
     let body = JSON.stringify({
       query: `#graphql
           query {
@@ -321,6 +339,8 @@ router.get('/announce/:id/commentaire', async (req, res) => {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `${token_type} ${access_token}`,
+
        }
       }).then( r => {
         let annonce = r.data
@@ -365,6 +385,7 @@ router.post('/announce/:id/commentaire/ajouter', async (req, res) => {
   }
 
   if( process.env.APP_USE == '/graphql') { 
+    const { token_type, access_token } = req.oidc.accessToken ? req.oidc.accessToken : { token_type: '', access_token: ''};
     let body = JSON.stringify({
       query: `#graphql
           mutation ($input: AddCommentInput!) {
@@ -383,7 +404,7 @@ router.post('/announce/:id/commentaire/ajouter', async (req, res) => {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + process.env.TOKEN_API
+          Authorization: `${token_type} ${access_token}`,
        }
       }).then( r => {
         if( r.data.errors ) {
@@ -413,6 +434,7 @@ router.post('/announce/:id/commentaire/history', async (req, res) => {
   }
   const announceId = req.params.id;
   if( process.env.APP_USE == '/graphql') { 
+    const { token_type, access_token } = req.oidc.accessToken ? req.oidc.accessToken : { token_type: '', access_token: ''};
     let body = JSON.stringify({
       query: `#graphql
           mutation ($input: AddCommentHistoryInput!) {
@@ -431,7 +453,7 @@ router.post('/announce/:id/commentaire/history', async (req, res) => {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer e' + process.env.TOKEN_API
+          Authorization: `${token_type} ${access_token}`,
        }
       }).then( r => {
         if( r.data.errors ) {

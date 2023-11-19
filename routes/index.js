@@ -37,6 +37,14 @@ router.get('/', function(req, res, next) {
    });
 });
 
+router.get('/callback', function(req, res, next) {
+  res.render('index', { 
+    title: 'Announces',    
+    default_directory: 'http://' + hostname + ':' + port,
+    user: req.session.user
+   });
+});
+
 router.post('/upload', multerImages.array( 'image' ), function(req, res, next) {
   res.sendStatus( 200 );
 });

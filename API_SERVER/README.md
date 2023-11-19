@@ -21,3 +21,19 @@ This project leverages the mega-awesome [swagger-tools](https://github.com/apige
 Si besoin changer le port de l'application dans index.js
 default
 var serverPort = 8000;
+
+# Authentication service
+https://manage.auth0.com
+
+# On a besoin des elements suivants dans notre .env
+Pareil que note AUTH0_AUDIENCE
+API_IDENTIFIER=http://localhost:4500/graphql
+
+L'util de notre application client
+CLIENT_ORIGIN_URL=http://localhost:3000
+
+Le serveur de notre api
+AUTH0_AUDIENCE=http://localhost:4500/graphql
+
+Domain donnée par auth0
+AUTH0_DOMAIN=dev-kpe14zh2c6kpw5rl.us.auth0.com

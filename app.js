@@ -45,6 +45,105 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  //console.log('Session:', req.session);
+  next();
+});
+
+/**
+ * Authentication
+ * authRequired => is a boolean property 
+ * that configures Express OpenID Connect to require 
+ * authentication for all routes when you set it to true.
+ * For this project, we'll have a mix of public and protected routes. As such, you set this property to false. 
+ * 
+ * auth0Logout => is another boolean value that enables 
+ * the Auth0 logout feature, 
+ * which lets you log out a user of the Auth0 session. 
+ * When implementing logout functionality in an application, 
+ * there are typically three sessions layers you need to consider:
+ */
+const { auth } = require('express-openid-connect');
+
+app.use(
+  auth({
+    issuerBaseURL: process.env.AUTH0_DOMAIN,
+    baseURL: process.env.BASE_URL,
+    clientID: process.env.CLIENT_ID,
+    secret: process.env.SESSION_SECRET,
+    authRequired: false,
+    auth0Logout: true,
+    clientSecret: process.env.CLIENT_SECRET,
+    authorizationParams: {
+      response_type: "code",
+      audience: process.env.AUTH0_AUDIENCE,
+    },
+  })
+);
+
+/* We define res.locals within a middleware function handler. 
+This object lets you pass data around your Express application. 
+There is one caveat about using res.locals: 
+these values only live within an individual request. A
+As soon as the request-response cycle is complete, 
+the values are gone. 
+This isn't a problem for our application since each time a user 
+requests a route from the browser, 
+the request-response cycle starts all over again.
+*/
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.oidc.isAuthenticated();
+  res.locals.activeRoute = req.originalUrl;
+  next();
+});
+
+var axios = require('axios');
+const { requiresAuth } = require('express-openid-connect');
+const api = axios.create({
+  baseURL: `http://localhost:${process.env.PORT_API}${process.env.APP_USE}`,
+  withCredentials: true,
+});
+
+app.get('/external-api', (req, res) => {
+  res.render('/');
+});
+
+app.get('/external-api/public-message', async (req, res) => {
+  let message;
+
+  try {
+    const body = await api.get(`http://localhost:6060/api/messages/public-message`);
+    message = body.data.message;
+  } catch (e) {
+    console.log(e);
+    message = 'Unable to retrieve message.';
+  }
+
+  console.log(message);
+});
+
+app.get('/external-api/protected-message', requiresAuth(), async (req, res) => {
+  //const { token_type, access_token } = req.oidc.accessToken;
+  let message;
+
+  try {
+    const body = await api.get(
+      `http://localhost:6060/api/messages/protected-message`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TOKEN_API}`,
+        },
+      },
+    );
+
+    message = body.data.message;
+  } catch (e) {
+    message = 'Unable to retrieve message.';
+  }
+  console.log(message);
+});
+
+
 // Initialisation de Passport
 app.use(passport.initialize());
 app.use(passport.session());
@@ -80,6 +179,7 @@ app.use('/', commentaireRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
 
 // error handler
 app.use(function(err, req, res, next) {

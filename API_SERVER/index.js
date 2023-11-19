@@ -30,6 +30,13 @@ var mongoose = require ('mongoose');
   }
 })();
 
+
+const loggingMiddleware = (req, res, next) => {
+  console.log("ip:", req.ip)
+  next()
+}
+
+
 var { makeExecutableSchema } = require("@graphql-tools/schema");
 const typeDefs = require('./schemaGQL')
 const resolvers = require('./resolversGQL');
@@ -54,19 +61,92 @@ const schema = makeExecutableSchema({ typeDefs, resolvers });
 //graphql.get('/playground', expressPlayground({ endpoint: '/graphql' }))
 
 
-const context = async req => {
-  const { authorization: token } = req.headers;
-  return { token };
+const context = async (req, res) => {//console.log('contextttt'); 
+  const { authorization: token } = req ? req.headers : '';
+  return { 
+    token ,
+    req: req,
+    res: res
+  };
 };
+
+const { expressjwt: jwt } = require('express-jwt');
+
+const jwksRsa = require("jwks-rsa");
+const { applyMiddleware } = require('graphql-middleware');
+const { GraphQLError } = require('graphql');
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
+  }),
+
+  audience: process.env.AUTH0_AUDIENCE,
+  issuer: `https://${process.env.AUTH0_DOMAIN}/`,
+  algorithms: ["RS256"],
+});
+
+
+/**
+ * Fonction middleware pour verifier notre token
+ * @param {} resolve : resolve function prmise
+ * @param {*} parent
+ * @param {*} args 
+ * @param {*} ctx : context
+ * @param {*} info 
+ * @returns 
+ */
+let check = async (resolve, parent, args, ctx, info) => {
+  try {
+    await new Promise((resolveJwt, rejectJwt) => {
+      checkJwt(ctx().req, ctx().res, (err) => {
+        if (err) {
+          rejectJwt(err);
+        } else {
+          resolveJwt();
+        }
+      });
+    });
+
+    return resolve(parent, args, ctx, info);
+  } catch (error) {
+    return new GraphQLError(error.message);
+  }
+};
+
+
+/**
+ * Creation de middlewares pour verifier le token avant chaque appel
+ */
+const announceMiddleware = {
+  Mutation: {
+    createAnnounce: check,
+    loginUser: check,
+    createCommentary: check,
+    addCommentaryHistory: check, 
+    modifyAnnounce: check,
+    deleteAnnounce: check
+  }
+}
+
+const middleware = [announceMiddleware];
+
+const schemaWithMiddleware = applyMiddleware(schema, ...middleware);
 
 graphql.use(
   '/graphql',
-  graphqlHTTP(async (req) => ({
-    schema,
-    rootValue: resolvers,
-    context: () => context(req)
-  })),
-);
+  graphqlHTTP(async (req, res) => {
+    const ctx = await context(req, res);
+    return {
+      schema: schemaWithMiddleware,
+      rootValue: resolvers,
+      context: () => ctx
+    }
+  })
+)
+
 graphql.get('/playground', expressPlayground({ endpoint: '/graphql' }));
 
 graphql.listen({ port: serverPortGraphQl });

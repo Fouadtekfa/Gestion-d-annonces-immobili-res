@@ -21,7 +21,7 @@ const resolvers = {
             })),
             date: announce.date.toString(),
             comments : announce.comments.map(comment => {
-                comment.history = comment.history.map( h => { h.date = h.date.toString(); return h; } );
+                comment.history = comment.history.map( h => {h.date = h.date ? h.date.toString() : null; return h; } );
                 return comment;
             } )
           }));

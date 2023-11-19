@@ -3,14 +3,16 @@ var http = require('http');
 var express = require('express');
 var { createHandler } = require('graphql-http/lib/use/express');
 const expressPlayground = require('graphql-playground-middleware-express').default
+const graphqlHTTP = require('express-graphql').graphqlHTTP;
+const isTokenValid = require('./src/validate');
 require("dotenv").config();
 
 const serverPortSwagger = process.env.serverPortSwagger;
 const serverPortGraphQl = process.env.serverPortGraphQl;
 
 var mongoose = require ('mongoose');
+
 (async () => {
-  console.log(process.env.serverPortSwagger)
   try {
     // Connexion à la base de données MongoDB
     await mongoose.connect(process.env.MDB, {
@@ -29,7 +31,8 @@ var mongoose = require ('mongoose');
 })();
 
 var { makeExecutableSchema } = require("@graphql-tools/schema");
-const schema = require('./schemaGQL')
+const typeDefs = require('./schemaGQL')
+const resolvers = require('./resolversGQL');
 var oas3Tools = require('oas3-tools');
 var path = require('path');
 var options = {
@@ -43,10 +46,29 @@ var expressAppConfig = oas3Tools.expressAppConfig(path.join(__dirname, 'api/open
 var swagger = expressAppConfig.getApp();
 
 
-
+const { buildSchema } = require("graphql");
 const graphql = express();
-graphql.use('/graphql', createHandler({ schema }));
-graphql.get('/playground', expressPlayground({ endpoint: '/graphql' }))
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+//const schema = buildSchema(typeDefs)
+//graphql.use('/graphql', createHandler({ schema }));
+//graphql.get('/playground', expressPlayground({ endpoint: '/graphql' }))
+
+
+const context = async req => {
+  const { authorization: token } = req.headers;
+  return { token };
+};
+
+graphql.use(
+  '/graphql',
+  graphqlHTTP(async (req) => ({
+    schema,
+    rootValue: resolvers,
+    context: () => context(req)
+  })),
+);
+graphql.get('/playground', expressPlayground({ endpoint: '/graphql' }));
+
 graphql.listen({ port: serverPortGraphQl });
 
 console.log(` =========== GRAPHQL ========= \n Listening on port ${serverPortGraphQl}. Open http://localhost:${serverPortGraphQl}/playground to run queries.`);

@@ -347,8 +347,9 @@ function modifyAnnounceHandler( fileNamesToSave ) {
     
 }
 
-function fillAnnounceData( announce ) {
+function fillAnnounceData( announce ) {console.log('check'); console.log(announce);
     $('#name-announce').val(announce.name);
+    console.log($('#type-announce'));
     $('#type-announce').val(announce.type);
     if(announce.published) {
         $( '#publish-announce' ).attr('checked', true);

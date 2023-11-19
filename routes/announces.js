@@ -5,6 +5,7 @@ const hostname = 'localhost';
 const port = 3000;
 const { ObjectId } = require('mongodb');
 var axios = require('axios');
+require("dotenv").config();
 const api = axios.create({
   baseURL: `http://localhost:${process.env.PORT_API}${process.env.APP_USE}`,
   withCredentials: true,
@@ -62,8 +63,15 @@ router.post('/create', async (req, res) => {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + process.env.TOKEN_API
        }
       }).then( r => {
+        if( r.data.errors ) {
+          let msg = 'une erreur s\'est produite lors de la création de l\'annonce : ' + r.data.errors.map( e => e.message ).join(', ');
+          res.status(500).json({ message: msg });
+          return;
+        } 
+
         let annonce = r.data
         annonce = annonce.data.createAnnounce
         res.redirect('/');
@@ -108,12 +116,19 @@ router.post('/modify', async (req, res) => {
               announce: obj
             }
         }
-      }); 
+      });
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + process.env.TOKEN_API
        }
+
       }).then( r => {
+      if( r.data.errors ) {
+        let msg = 'une erreur s\'est produite lors de la modification de l\'annonce : ' + r.data.errors.map( e => e.message ).join(', ');
+        res.status(500).json({ message: msg });
+        return;
+      } 
         let annonce = r.data
         annonce = annonce.data.modifyAnnounce
         res.redirect('/');
@@ -247,6 +262,7 @@ router.delete('/announce/:id', function(req, res, next) {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + process.env.TOKEN_API
        }
       }).then( r => {
         let annonce = r.data
@@ -256,8 +272,14 @@ router.delete('/announce/:id', function(req, res, next) {
         console.log( err );
        });
   } else {
-    api.delete(`/announce/${req.params.id}`).then( response => {
-      res.json(response.data);
+    api.delete(`/announce/${req.params.id}`).then( r => {
+      if( r.data.errors ) {
+        let msg = 'une erreur s\'est produite lors de la suppression de l\'annonce : ' + r.data.errors.map( e => e.message ).join(', ');
+        res.status(500).json({ message: msg });
+        return;
+      }
+
+      res.json(r.data);
      }).catch( err => {
       console.log( err );
      });
@@ -361,8 +383,15 @@ router.post('/announce/:id/commentaire/ajouter', async (req, res) => {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + process.env.TOKEN_API
        }
       }).then( r => {
+        if( r.data.errors ) {
+          let msg = 'une erreur s\'est produite lors de l\'ajout d\'un commentaire : ' + r.data.errors.map( e => e.message ).join(', ');
+          res.status(500).json({ message: msg });
+          return;
+        } 
+
         let annonce = r.data
         annonce = annonce.data.createCommentary
         res.redirect(`/announce/${announceId}/commentaire`);
@@ -402,10 +431,17 @@ router.post('/announce/:id/commentaire/history', async (req, res) => {
       api.post('/',  body, {
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer e' + process.env.TOKEN_API
        }
       }).then( r => {
+        if( r.data.errors ) {
+          console.log(r.data.errors)
+          let msg = 'une erreur s\'est produite lors de l\'ajout d\'une réponse : ' + r.data.errors.map( e => e.message ).join(', ');
+          res.status(500).json({ message: msg }); 
+          return;
+        }
+
         let annonce = r.data
-        console.log(annonce);
         annonce = annonce.data.addCommentaryHistory
         res.redirect(`/announce/${announceId}/commentaire`);
       } ).catch( err => {

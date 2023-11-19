@@ -54,8 +54,12 @@ module.exports.deleteAnnounce = function (req, res, next, id) {
     .then(function (response) {
       utils.writeJson(res, response);
     })
-    .catch(function (response) {
-      utils.writeJson(res, response);
+    .catch(function (error) {
+      if (error.status) {
+        res.status(error.status).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: 'Erreur lors de la suppression de l\'annonce' });
+      }
     });
 };
 

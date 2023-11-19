@@ -58,8 +58,13 @@ const typeDefs = `#graphql
     addCommentaryHistory(input: AddCommentHistoryInput!): Announce
     modifyAnnounce(input: AnnounceModifyInput!): Announce
     deleteAnnounce(id: ID): Announce
+    loginUser(input: LoginUserInput): User
   }
 
+  input LoginUserInput {
+    email: String!
+    first_name: String!
+  }
   input AnnounceInput {
     name: String!
     type: String!

@@ -4,7 +4,7 @@ let Schema = mongoose.Schema;
 const UserSchema = new Schema({
     name: {
       type: String,
-      required: true
+      required: false
     },
     first_name: {
         type: String,
@@ -16,7 +16,7 @@ const UserSchema = new Schema({
     },
     password: {
       type: String,
-      required: true
+      required: false
     },
     isAdmin: {
       type: Boolean,

@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
 exports.addUser = function(body) {
-  console.log('check boddyyy'); console.log(body.user);
     return new Promise(async function(resolve, reject) {
       try {
         let email = body.user.email;
@@ -22,7 +21,7 @@ exports.addUser = function(body) {
           return reject(error);
         }
         
-        body.user.password = await bcrypt.hash(body.user.password, 10); 
+        body.user.password = await bcrypt.hash(body.user.password, 10);
         // Créer un nouvel utilisateur
         const newUser = new User(body.user);
         await newUser.save();
